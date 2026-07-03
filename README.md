@@ -1,5 +1,5 @@
 # [Nombre del Proyecto]
-> Creado desde el Product Development Framework Template v2.0.
+> Creado desde el Product Development Framework Template v2.1.
 
 ## Setup rápido
 
@@ -23,15 +23,16 @@ Usa Claude Design para wireframes, diseño visual y prototipado.
 
 | Fase | Nombre | Herramienta | Modelo |
 |------|--------|-------------|--------|
+| -1 | Calificación (30 min) | Cowork | Sonnet 5 |
 | 0 | Project Audit (proyectos existentes) | Cowork | Fable 5 |
 | 1 | Investigación | Cowork | Fable 5 |
 | 2 | Discovery & Definición | Cowork | Fable 5 |
 | 3 | Análisis de Mercado | Cowork | Fable 5 |
-| — | Gate · Presentación al Cliente | Usuario | — |
+| — | Gate · Propuesta + Demo | Usuario | — |
 | 4 | Planificación Técnica | Cowork | Opus 4.8 |
 | 5 | Diseño / UX | Design | Opus 4.8 |
 | 6 | MVP | Code | Sonnet 5 |
 | 7 | Desarrollo Completo | Code | Sonnet 5 |
 | 8 | Post-Lanzamiento | Cowork + Code | Sonnet 5 |
 
-*Product Development Framework v2.0*
+*Product Development Framework v2.1*

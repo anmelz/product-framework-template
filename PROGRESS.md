@@ -23,6 +23,19 @@
 | 7 · Desarrollo Completo | ⏳ Pendiente |
 | 8 · Post-Lanzamiento | ⏳ Pendiente |
 
+## Calibración — Estimado vs. Real
+
+> Se llena al cerrar cada fase. Alimenta las estimaciones futuras del arquetipo.
+
+| Fase | Estimado | Real | Desviación | Nota |
+|------|----------|------|-----------|------|
+| 5 · Diseño | [X sem] | — | — | |
+| 6 · MVP | [X sem] | — | — | |
+| 7 · Desarrollo | [X sem] | — | — | |
+
+**Arquetipo del proyecto:** [SaaS MVP / Marketing+Producto / Plataforma interna / App móvil / Custom]
+**Track:** [Fast / Full]
+
 ## Overrides registrados
 Ninguno.
 
@@ -31,4 +44,4 @@ Ninguno.
 - Decisiones: `docs/decisions/`
 
 ---
-*Product Development Framework v2.0*
+*Product Development Framework v2.1*

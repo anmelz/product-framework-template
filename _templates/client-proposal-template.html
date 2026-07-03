@@ -1,0 +1,1247 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>[NOMBRE DEL PROYECTO] — Propuesta para [NOMBRE DEL CLIENTE]</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,300;1,9..144,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+/*
+  ╔══════════════════════════════════════════════════════════╗
+  ║  BRAND CONFIG — Completar basándose en branding          ║
+  ║  del cliente antes de compartir esta propuesta.          ║
+  ║                                                          ║
+  ║  Claude extrae estos valores de:                         ║
+  ║  · La URL del sitio web del cliente                      ║
+  ║  · Archivos de branding o guía de marca                  ║
+  ║  · Colores definidos por el usuario                      ║
+  ╚══════════════════════════════════════════════════════════╝
+*/
+:root {
+  /* ── Colores de marca del cliente ── */
+  --brand-primary:   #4338CA;  /* Color principal: botones, acentos, eyebrows */
+  --brand-secondary: #818CF8;  /* Color secundario: degradados, hover states */
+  --brand-accent:    #D97706;  /* Color de acento: CTA, highlights, precios */
+  --brand-dark:      #0F0F1A;  /* Color oscuro: sección problema, pricing card */
+
+  /* ── Derivados automáticos (Claude ajusta opacidades) ── */
+  --brand-primary-light:   #EEF2FF;  /* Fondo sutil del color primario (~5% opacidad) */
+  --brand-primary-border:  rgba(67,56,202,0.2);  /* Borde sutil */
+  --brand-accent-light:    #FEF3C7;  /* Fondo sutil del acento */
+  --brand-dark-text-muted: rgba(255,255,255,0.4);  /* Texto sobre fondo oscuro */
+
+  /* ── Neutros (generalmente fijos) ── */
+  --white:  #FFFFFF;
+  --off:    #F8F8FC;
+  --ink:    #0F0F1A;
+  --ink-2:  #3D3D52;
+  --ink-3:  #8888A0;
+  --border: #E5E7EB;
+  --green:       #059669;
+  --green-light: #D1FAE5;
+
+  /* ── Aliases (no tocar — se usan en todo el CSS) ── */
+  --indigo:       var(--brand-primary);
+  --indigo-light: var(--brand-primary-light);
+  --indigo-mid:   var(--brand-secondary);
+  --amber:        var(--brand-accent);
+  --amber-light:  var(--brand-accent-light);
+}
+
+html { scroll-behavior: smooth; scroll-snap-type: none; }
+
+body {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  color: var(--ink);
+  background: var(--white);
+  overflow-x: hidden;
+}
+
+/* ── Progress bar ── */
+#progress-bar {
+  position: fixed;
+  top: 0; left: 0;
+  height: 3px;
+  width: 0%;
+  background: linear-gradient(90deg, var(--indigo), var(--indigo-mid));
+  z-index: 1000;
+  transition: width 0.1s linear;
+}
+
+/* ── Nav dots ── */
+#nav-dots {
+  position: fixed;
+  right: 28px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 100;
+}
+
+.nav-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--border);
+  cursor: pointer;
+  transition: all 0.25s ease;
+  border: none;
+  padding: 0;
+}
+.nav-dot.active { background: var(--indigo); transform: scale(1.4); }
+.nav-dot:hover { background: var(--indigo-mid); }
+
+/* ── Section base ── */
+section {
+  min-height: 100vh;
+  padding: 96px 80px;
+  display: flex;
+  align-items: center;
+  opacity: 0;
+  transform: translateY(32px);
+  transition: opacity 0.7s ease, transform 0.7s ease;
+}
+section.visible { opacity: 1; transform: translateY(0); }
+
+.section-inner { width: 100%; max-width: 960px; margin: 0 auto; }
+
+/* ── Eyebrow ── */
+.eyebrow {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--indigo);
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.eyebrow::before {
+  content: '';
+  display: inline-block;
+  width: 28px; height: 2px;
+  background: var(--indigo);
+  border-radius: 1px;
+}
+
+/* ── Display type ── */
+.display {
+  font-family: 'Fraunces', serif;
+  font-size: clamp(42px, 6vw, 72px);
+  font-weight: 600;
+  line-height: 1.08;
+  letter-spacing: -2px;
+  color: var(--ink);
+  margin-bottom: 24px;
+}
+
+.display em {
+  font-style: italic;
+  color: var(--indigo);
+  font-weight: 300;
+}
+
+.display-white { color: var(--white); }
+.display-white em { color: var(--indigo-mid); }
+
+.lead {
+  font-size: 18px;
+  line-height: 1.75;
+  color: var(--ink-2);
+  max-width: 600px;
+}
+
+/* ─────────────────────────────────────────
+   SECTION 1 — COVER
+───────────────────────────────────────── */
+#cover {
+  background: var(--white);
+  position: relative;
+  overflow: hidden;
+  padding: 0;
+}
+
+.cover-blob {
+  position: absolute;
+  top: -200px; right: -200px;
+  width: 700px; height: 700px;
+  border-radius: 50%;
+  background: radial-gradient(circle at center, rgba(67,56,202,0.12) 0%, rgba(129,140,248,0.06) 50%, transparent 70%);
+  animation: blob-float 8s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes blob-float {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(-30px, 40px) scale(1.05); }
+  66% { transform: translate(20px, -20px) scale(0.97); }
+}
+
+.cover-inner {
+  width: 100%;
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 120px 80px;
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  gap: 80px;
+  min-height: 100vh;
+}
+
+.cover-left { }
+
+.cover-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--indigo);
+  background: var(--indigo-light);
+  border: 1px solid rgba(67,56,202,0.2);
+  padding: 6px 12px;
+  border-radius: 100px;
+  margin-bottom: 32px;
+}
+
+.cover-client {
+  font-size: 14px;
+  color: var(--ink-3);
+  margin-top: 28px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.cover-client::before {
+  content: '';
+  display: inline-block;
+  width: 20px; height: 1px;
+  background: var(--ink-3);
+}
+
+.cover-right {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.cover-stat {
+  background: var(--off);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 24px 28px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.cover-stat:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.06);
+}
+
+.cover-stat-value {
+  font-family: 'Fraunces', serif;
+  font-size: 36px;
+  font-weight: 600;
+  letter-spacing: -1px;
+  color: var(--indigo);
+  margin-bottom: 4px;
+}
+
+.cover-stat-label {
+  font-size: 13px;
+  color: var(--ink-3);
+  line-height: 1.5;
+}
+
+/* ─────────────────────────────────────────
+   SECTION 2 — PROBLEMA
+───────────────────────────────────────── */
+#problema {
+  background: var(--ink);
+}
+
+.problema-inner {
+  max-width: 960px; margin: 0 auto; width: 100%;
+}
+
+.problema-quote {
+  font-family: 'Fraunces', serif;
+  font-size: clamp(28px, 4vw, 52px);
+  font-weight: 400;
+  font-style: italic;
+  color: var(--white);
+  line-height: 1.25;
+  margin-bottom: 48px;
+  max-width: 800px;
+}
+
+.problema-quote em {
+  color: var(--indigo-mid);
+  font-style: normal;
+  font-weight: 600;
+}
+
+.problema-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.problema-item {
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 12px;
+  padding: 24px;
+  background: rgba(255,255,255,0.04);
+}
+
+.problema-icon {
+  font-size: 24px;
+  margin-bottom: 12px;
+}
+
+.problema-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--white);
+  margin-bottom: 8px;
+}
+
+.problema-desc {
+  font-size: 13px;
+  color: rgba(255,255,255,0.5);
+  line-height: 1.65;
+}
+
+/* ─────────────────────────────────────────
+   SECTION 3 — SOLUCIÓN
+───────────────────────────────────────── */
+#solucion { background: var(--white); }
+
+.solucion-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: center;
+  width: 100%;
+}
+
+.solucion-mockup {
+  background: var(--indigo-light);
+  border: 2px solid rgba(67,56,202,0.15);
+  border-radius: 20px;
+  aspect-ratio: 4/3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 64px;
+  position: relative;
+  overflow: hidden;
+}
+
+.solucion-mockup::after {
+  content: '';
+  position: absolute;
+  bottom: -40px; right: -40px;
+  width: 200px; height: 200px;
+  border-radius: 50%;
+  background: rgba(67,56,202,0.1);
+}
+
+.solucion-pillars {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 32px;
+}
+
+.solucion-pillar {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 16px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--off);
+  transition: border-color 0.2s, background 0.2s;
+}
+.solucion-pillar:hover {
+  border-color: var(--indigo);
+  background: var(--indigo-light);
+}
+
+.solucion-pillar-icon {
+  width: 36px; height: 36px;
+  border-radius: 8px;
+  background: var(--indigo-light);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; flex-shrink: 0;
+}
+
+.solucion-pillar-title {
+  font-size: 14px; font-weight: 600;
+  color: var(--ink); margin-bottom: 3px;
+}
+
+.solucion-pillar-desc {
+  font-size: 12.5px; color: var(--ink-3); line-height: 1.55;
+}
+
+/* ─────────────────────────────────────────
+   SECTION 4 — MERCADO
+───────────────────────────────────────── */
+#mercado { background: var(--indigo-light); }
+
+.mercado-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin: 48px 0;
+}
+
+.mercado-stat {
+  background: var(--white);
+  border-radius: 16px;
+  padding: 32px 24px;
+  border: 1px solid rgba(67,56,202,0.12);
+  text-align: center;
+}
+
+.mercado-stat-value {
+  font-family: 'Fraunces', serif;
+  font-size: 48px;
+  font-weight: 700;
+  letter-spacing: -2px;
+  color: var(--indigo);
+  margin-bottom: 6px;
+}
+
+.mercado-stat-label {
+  font-size: 13px;
+  color: var(--ink-3);
+  line-height: 1.5;
+}
+
+.mercado-competitors {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+.competitor-card {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px;
+  text-align: center;
+}
+
+.competitor-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 4px;
+}
+
+.competitor-gap {
+  font-size: 11px;
+  color: var(--amber);
+  background: var(--amber-light);
+  padding: 2px 8px;
+  border-radius: 100px;
+  display: inline-block;
+  margin-top: 6px;
+}
+
+/* ─────────────────────────────────────────
+   SECTION 5 — FUNCIONALIDADES
+───────────────────────────────────────── */
+#features { background: var(--white); }
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  margin-top: 48px;
+}
+
+.feature-card {
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 28px 24px;
+  background: var(--white);
+  cursor: pointer;
+  transition: all 0.25s ease;
+  position: relative;
+}
+
+.feature-card:hover {
+  border-color: var(--indigo);
+  background: var(--indigo-light);
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(67,56,202,0.1);
+}
+
+.feature-icon {
+  font-size: 28px;
+  margin-bottom: 16px;
+}
+
+.feature-name {
+  font-family: 'Fraunces', serif;
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 10px;
+  letter-spacing: -0.3px;
+}
+
+.feature-desc {
+  font-size: 13px;
+  color: var(--ink-3);
+  line-height: 1.65;
+}
+
+/* ─────────────────────────────────────────
+   SECTION 6 — TIMELINE
+───────────────────────────────────────── */
+#timeline { background: var(--off); }
+
+.timeline-track {
+  position: relative;
+  margin-top: 64px;
+  padding-bottom: 16px;
+}
+
+.timeline-line {
+  position: absolute;
+  top: 24px;
+  left: 24px; right: 0;
+  height: 2px;
+  background: var(--border);
+}
+
+.timeline-fill {
+  position: absolute;
+  top: 0; left: 0;
+  height: 100%;
+  width: 33%;
+  background: linear-gradient(90deg, var(--indigo), var(--indigo-mid));
+  border-radius: 1px;
+  transition: width 1s ease;
+}
+
+.timeline-steps {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+  position: relative;
+}
+
+.timeline-step { }
+
+.timeline-dot {
+  width: 48px; height: 48px;
+  border-radius: 50%;
+  background: var(--white);
+  border: 2px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--ink-3);
+  margin-bottom: 20px;
+  transition: all 0.3s ease;
+  position: relative;
+  z-index: 1;
+}
+
+.timeline-step.done .timeline-dot {
+  background: var(--indigo);
+  border-color: var(--indigo);
+  color: var(--white);
+}
+
+.timeline-step.current .timeline-dot {
+  background: var(--white);
+  border-color: var(--indigo);
+  color: var(--indigo);
+  box-shadow: 0 0 0 4px rgba(67,56,202,0.1);
+}
+
+.timeline-phase {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  margin-bottom: 6px;
+}
+
+.timeline-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ink);
+  margin-bottom: 6px;
+}
+
+.timeline-duration {
+  font-size: 12px;
+  color: var(--indigo);
+  font-weight: 500;
+}
+
+.timeline-deliverable {
+  font-size: 12px;
+  color: var(--ink-3);
+  margin-top: 6px;
+  line-height: 1.5;
+}
+
+/* ─────────────────────────────────────────
+   SECTION 7 — INVERSIÓN
+───────────────────────────────────────── */
+#inversion { background: var(--white); }
+
+.inversion-layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  align-items: start;
+}
+
+.pricing-card {
+  background: var(--ink);
+  border-radius: 24px;
+  padding: 40px;
+  color: var(--white);
+  position: relative;
+  overflow: hidden;
+}
+
+.pricing-card::before {
+  content: '';
+  position: absolute;
+  top: -60px; right: -60px;
+  width: 200px; height: 200px;
+  border-radius: 50%;
+  background: rgba(67,56,202,0.3);
+}
+
+.pricing-type {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--indigo-mid);
+  margin-bottom: 16px;
+}
+
+.pricing-amount {
+  font-family: 'Fraunces', serif;
+  font-size: 56px;
+  font-weight: 700;
+  letter-spacing: -2px;
+  color: var(--white);
+  line-height: 1;
+  margin-bottom: 6px;
+}
+
+.pricing-period {
+  font-size: 14px;
+  color: rgba(255,255,255,0.4);
+  margin-bottom: 32px;
+}
+
+.pricing-items {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 32px;
+}
+
+.pricing-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 14px;
+  color: rgba(255,255,255,0.8);
+}
+
+.pricing-item::before {
+  content: '✓';
+  width: 20px; height: 20px;
+  border-radius: 50%;
+  background: rgba(67,56,202,0.4);
+  color: var(--indigo-mid);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px;
+  flex-shrink: 0;
+}
+
+.pricing-note {
+  font-size: 12px;
+  color: rgba(255,255,255,0.3);
+  line-height: 1.6;
+  border-top: 1px solid rgba(255,255,255,0.1);
+  padding-top: 20px;
+}
+
+.payment-schedule {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.payment-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  background: var(--off);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+
+.payment-milestone {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--ink);
+}
+
+.payment-when {
+  font-size: 12px;
+  color: var(--ink-3);
+  margin-top: 2px;
+}
+
+.payment-amount {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--indigo);
+}
+
+/* ─────────────────────────────────────────
+   SECTION 8 — PRÓXIMOS PASOS
+───────────────────────────────────────── */
+#next {
+  background: var(--indigo);
+  text-align: center;
+}
+
+.next-inner {
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+.next-steps {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  margin: 48px 0;
+}
+
+.next-step {
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 12px;
+  padding: 24px 20px;
+  flex: 1;
+  text-align: left;
+}
+
+.next-step-num {
+  font-family: 'Fraunces', serif;
+  font-size: 32px;
+  font-weight: 300;
+  font-style: italic;
+  color: var(--indigo-mid);
+  margin-bottom: 10px;
+}
+
+.next-step-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--white);
+  margin-bottom: 6px;
+}
+
+.next-step-desc {
+  font-size: 12px;
+  color: rgba(255,255,255,0.5);
+  line-height: 1.6;
+}
+
+.cta-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--white);
+  color: var(--indigo);
+  font-weight: 700;
+  font-size: 15px;
+  padding: 18px 40px;
+  border-radius: 100px;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  border: none;
+  cursor: pointer;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+}
+.cta-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.2);
+  background: var(--off);
+}
+
+.footer-meta {
+  margin-top: 64px;
+  font-size: 12px;
+  color: rgba(255,255,255,0.3);
+  font-family: 'JetBrains Mono', monospace;
+  letter-spacing: 0.05em;
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  section { padding: 72px 24px; }
+  .cover-inner { grid-template-columns: 1fr; padding: 80px 24px; gap: 48px; }
+  .cover-right { display: none; }
+  .solucion-layout, .inversion-layout { grid-template-columns: 1fr; gap: 40px; }
+  .problema-grid, .mercado-stats, .features-grid { grid-template-columns: 1fr; }
+  .mercado-competitors { grid-template-columns: 1fr 1fr; }
+  .timeline-steps { grid-template-columns: 1fr 1fr; }
+  .next-steps { flex-direction: column; }
+  #nav-dots { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- 
+  ╔══════════════════════════════════════════════════════════╗
+  ║  PROPUESTA PARA: [NOMBRE DEL CLIENTE]                    ║
+  ║  PROYECTO:       [NOMBRE DEL PROYECTO]                   ║
+  ║  BRANDING:       [URL o descripción de fuente de colores]║
+  ╚══════════════════════════════════════════════════════════╝
+-->
+
+<!-- Progress bar -->
+<div id="progress-bar"></div>
+
+<!-- Navigation dots -->
+<nav id="nav-dots" aria-label="Secciones">
+  <button class="nav-dot active" data-target="cover" title="Inicio"></button>
+  <button class="nav-dot" data-target="problema" title="El problema"></button>
+  <button class="nav-dot" data-target="solucion" title="La solución"></button>
+  <button class="nav-dot" data-target="mercado" title="Mercado"></button>
+  <button class="nav-dot" data-target="features" title="Funcionalidades"></button>
+  <button class="nav-dot" data-target="timeline" title="Timeline"></button>
+  <button class="nav-dot" data-target="inversion" title="Inversión"></button>
+  <button class="nav-dot" data-target="next" title="Próximos pasos"></button>
+</nav>
+
+<!-- ═══════════════════════════════════════
+     SECCIÓN 1 · COVER
+═══════════════════════════════════════ -->
+<section id="cover" class="visible">
+  <div class="cover-blob"></div>
+  <div class="cover-inner">
+    <div class="cover-left">
+      <div class="cover-tag">
+        <!-- Logo del cliente: reemplazar emoji con <img src="logo.svg"> si está disponible -->
+        🏢 Propuesta · [MES AÑO]
+      </div>
+      <h1 class="display">
+        [TAGLINE PRINCIPAL<br>DEL PRODUCTO<br>EN <em>dos o tres líneas</em>]
+      </h1>
+      <p class="lead">[Una oración que describe qué es el producto y para quién. Sin jerga técnica. Orientada al resultado.]</p>
+      <p class="cover-client">Preparado para [NOMBRE DEL CLIENTE]</p>
+    </div>
+    <div class="cover-right">
+      <div class="cover-stat">
+        <div class="cover-stat-value">[X]×</div>
+        <div class="cover-stat-label">[Métrica de oportunidad — ej: "el mercado crece anualmente"]</div>
+      </div>
+      <div class="cover-stat">
+        <div class="cover-stat-value">[X]%</div>
+        <div class="cover-stat-label">[Problema cuantificado — ej: "de empresas similares aún lo resuelven manualmente"]</div>
+      </div>
+      <div class="cover-stat">
+        <div class="cover-stat-value">[X]sem</div>
+        <div class="cover-stat-label">[Tiempo a primer entregable]</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     SECCIÓN 2 · EL PROBLEMA
+═══════════════════════════════════════ -->
+<section id="problema">
+  <div class="problema-inner">
+    <div class="eyebrow" style="color:rgba(255,255,255,0.4); --indigo:rgba(255,255,255,0.4);">El problema</div>
+    <p class="problema-quote">
+      "[Frase que describe el problema como lo viviría el cliente. Específica, visceral, en primera persona o cercana. Incluye <em>la consecuencia real</em> de no resolverlo.]"
+    </p>
+    <div class="problema-grid">
+      <div class="problema-item">
+        <div class="problema-icon">⏳</div>
+        <div class="problema-title">[Problema 1]</div>
+        <div class="problema-desc">[Descripción breve de cómo este problema se manifiesta hoy y cuánto cuesta en tiempo o dinero.]</div>
+      </div>
+      <div class="problema-item">
+        <div class="problema-icon">🔗</div>
+        <div class="problema-title">[Problema 2]</div>
+        <div class="problema-desc">[Descripción breve de cómo este problema se manifiesta hoy y cuánto cuesta en tiempo o dinero.]</div>
+      </div>
+      <div class="problema-item">
+        <div class="problema-icon">📉</div>
+        <div class="problema-title">[Problema 3]</div>
+        <div class="problema-desc">[Descripción breve de cómo este problema se manifiesta hoy y cuánto cuesta en tiempo o dinero.]</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     SECCIÓN 3 · LA SOLUCIÓN
+═══════════════════════════════════════ -->
+<section id="solucion">
+  <div class="section-inner">
+    <div class="solucion-layout">
+      <div>
+        <div class="eyebrow">La solución</div>
+        <h2 class="display">[NOMBRE<br>DEL<br><em>PRODUCTO</em>]</h2>
+        <p class="lead">[Descripción clara de qué hace el producto. Enfocada en el resultado para el usuario, no en la tecnología. Máximo 2 oraciones.]</p>
+        <div class="solucion-pillars">
+          <div class="solucion-pillar">
+            <div class="solucion-pillar-icon">🎯</div>
+            <div>
+              <div class="solucion-pillar-title">[Pilar 1 de valor]</div>
+              <div class="solucion-pillar-desc">[Cómo este aspecto del producto resuelve directamente uno de los problemas.]</div>
+            </div>
+          </div>
+          <div class="solucion-pillar">
+            <div class="solucion-pillar-icon">⚡</div>
+            <div>
+              <div class="solucion-pillar-title">[Pilar 2 de valor]</div>
+              <div class="solucion-pillar-desc">[Cómo este aspecto del producto resuelve directamente uno de los problemas.]</div>
+            </div>
+          </div>
+          <div class="solucion-pillar">
+            <div class="solucion-pillar-icon">🔒</div>
+            <div>
+              <div class="solucion-pillar-title">[Pilar 3 de valor]</div>
+              <div class="solucion-pillar-desc">[Cómo este aspecto del producto resuelve directamente uno de los problemas.]</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="solucion-mockup">🖥️</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     SECCIÓN 4 · MERCADO
+═══════════════════════════════════════ -->
+<section id="mercado">
+  <div class="section-inner">
+    <div class="eyebrow">Oportunidad de mercado</div>
+    <h2 class="display">El momento<br>es <em>ahora</em></h2>
+    <div class="mercado-stats">
+      <div class="mercado-stat">
+        <div class="mercado-stat-value" data-counter="[N]">[N]</div>
+        <div class="mercado-stat-label">Mercado total disponible<br>(TAM)</div>
+      </div>
+      <div class="mercado-stat">
+        <div class="mercado-stat-value" data-counter="[N]">[N]</div>
+        <div class="mercado-stat-label">Mercado alcanzable<br>(SAM)</div>
+      </div>
+      <div class="mercado-stat">
+        <div class="mercado-stat-value" data-counter="[N]">[N]</div>
+        <div class="mercado-stat-label">Objetivo año 1<br>(SOM)</div>
+      </div>
+    </div>
+    <p style="font-size:13px; color:var(--ink-3); margin-bottom:20px; font-family:'JetBrains Mono',monospace; letter-spacing:0.05em; text-transform:uppercase;">Competencia actual — y dónde fallan</p>
+    <div class="mercado-competitors">
+      <div class="competitor-card">
+        <div class="competitor-name">[Competidor 1]</div>
+        <div class="competitor-gap">[Gap que tienen]</div>
+      </div>
+      <div class="competitor-card">
+        <div class="competitor-name">[Competidor 2]</div>
+        <div class="competitor-gap">[Gap que tienen]</div>
+      </div>
+      <div class="competitor-card">
+        <div class="competitor-name">[Competidor 3]</div>
+        <div class="competitor-gap">[Gap que tienen]</div>
+      </div>
+      <div class="competitor-card" style="border-color:var(--indigo); background:var(--indigo-light);">
+        <div class="competitor-name" style="color:var(--indigo);">[NOMBRE PRODUCTO]</div>
+        <div class="competitor-gap" style="background:var(--green-light); color:var(--green);">Nuestra ventaja</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     SECCIÓN 5 · FUNCIONALIDADES
+═══════════════════════════════════════ -->
+<section id="features">
+  <div class="section-inner">
+    <div class="eyebrow">Funcionalidades clave</div>
+    <h2 class="display">Todo lo que<br><em>necesitan</em></h2>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">🔍</div>
+        <div class="feature-name">[Feature 1]</div>
+        <div class="feature-desc">[Descripción orientada al beneficio, no a la tecnología. Qué puede hacer el usuario gracias a esto.]</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📊</div>
+        <div class="feature-name">[Feature 2]</div>
+        <div class="feature-desc">[Descripción orientada al beneficio, no a la tecnología. Qué puede hacer el usuario gracias a esto.]</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🤝</div>
+        <div class="feature-name">[Feature 3]</div>
+        <div class="feature-desc">[Descripción orientada al beneficio, no a la tecnología. Qué puede hacer el usuario gracias a esto.]</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">⚡</div>
+        <div class="feature-name">[Feature 4]</div>
+        <div class="feature-desc">[Descripción orientada al beneficio, no a la tecnología. Qué puede hacer el usuario gracias a esto.]</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🔒</div>
+        <div class="feature-name">[Feature 5]</div>
+        <div class="feature-desc">[Descripción orientada al beneficio, no a la tecnología. Qué puede hacer el usuario gracias a esto.]</div>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📱</div>
+        <div class="feature-name">[Feature 6]</div>
+        <div class="feature-desc">[Descripción orientada al beneficio, no a la tecnología. Qué puede hacer el usuario gracias a esto.]</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     SECCIÓN 6 · TIMELINE
+═══════════════════════════════════════ -->
+<section id="timeline">
+  <div class="section-inner">
+    <div class="eyebrow">Roadmap de entrega</div>
+    <h2 class="display">De aquí a<br><em>producción</em></h2>
+    <div class="timeline-track">
+      <div class="timeline-line">
+        <div class="timeline-fill" id="timeline-fill"></div>
+      </div>
+      <div class="timeline-steps">
+        <div class="timeline-step current">
+          <div class="timeline-dot">01</div>
+          <div class="timeline-phase">Semanas 1–2</div>
+          <div class="timeline-name">Diseño & UX</div>
+          <div class="timeline-duration">[X] semanas</div>
+          <div class="timeline-deliverable">Prototipo interactivo aprobado</div>
+        </div>
+        <div class="timeline-step">
+          <div class="timeline-dot">02</div>
+          <div class="timeline-phase">Semanas [X–X]</div>
+          <div class="timeline-name">MVP</div>
+          <div class="timeline-duration">[X] semanas</div>
+          <div class="timeline-deliverable">Producto funcional para pruebas</div>
+        </div>
+        <div class="timeline-step">
+          <div class="timeline-dot">03</div>
+          <div class="timeline-phase">Semanas [X–X]</div>
+          <div class="timeline-name">Desarrollo Completo</div>
+          <div class="timeline-duration">[X] semanas</div>
+          <div class="timeline-deliverable">Todas las funcionalidades</div>
+        </div>
+        <div class="timeline-step">
+          <div class="timeline-dot">04</div>
+          <div class="timeline-phase">Semana [X]</div>
+          <div class="timeline-name">Lanzamiento</div>
+          <div class="timeline-duration">1 semana</div>
+          <div class="timeline-deliverable">Producto en producción</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     SECCIÓN 7 · INVERSIÓN
+═══════════════════════════════════════ -->
+<section id="inversion">
+  <div class="section-inner">
+    <div class="eyebrow">Inversión</div>
+    <h2 class="display">Precio justo<br>por un producto <em>real</em></h2>
+    <div class="inversion-layout" style="margin-top:48px;">
+      <div class="pricing-card">
+        <div class="pricing-type">Inversión total</div>
+        <div class="pricing-amount">$[X]K</div>
+        <div class="pricing-period">[Modelo: precio fijo / por fases / retainer]</div>
+        <div class="pricing-items">
+          <div class="pricing-item">Diseño UX completo</div>
+          <div class="pricing-item">Desarrollo MVP + producción</div>
+          <div class="pricing-item">Testing y QA</div>
+          <div class="pricing-item">[X] meses de soporte post-lanzamiento</div>
+          <div class="pricing-item">[Feature adicional incluida si aplica]</div>
+        </div>
+        <div class="pricing-note">*Precio válido por 30 días. Ajustes de scope requieren cotización adicional.</div>
+      </div>
+      <div>
+        <p style="font-size:14px; font-weight:600; color:var(--ink); margin-bottom:20px;">Estructura de pagos</p>
+        <div class="payment-schedule">
+          <div class="payment-row">
+            <div>
+              <div class="payment-milestone">Anticipo</div>
+              <div class="payment-when">Al firmar el acuerdo</div>
+            </div>
+            <div class="payment-amount">$[X]K</div>
+          </div>
+          <div class="payment-row">
+            <div>
+              <div class="payment-milestone">Diseño aprobado</div>
+              <div class="payment-when">Al entregar prototipo</div>
+            </div>
+            <div class="payment-amount">$[X]K</div>
+          </div>
+          <div class="payment-row">
+            <div>
+              <div class="payment-milestone">MVP entregado</div>
+              <div class="payment-when">Semana [X]</div>
+            </div>
+            <div class="payment-amount">$[X]K</div>
+          </div>
+          <div class="payment-row">
+            <div>
+              <div class="payment-milestone">Lanzamiento</div>
+              <div class="payment-when">Producto en producción</div>
+            </div>
+            <div class="payment-amount">$[X]K</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════
+     SECCIÓN 8 · PRÓXIMOS PASOS
+═══════════════════════════════════════ -->
+<section id="next">
+  <div class="next-inner">
+    <div class="eyebrow" style="color:rgba(255,255,255,0.4); justify-content:center;">¿Listos para empezar?</div>
+    <h2 class="display display-white">Tres pasos<br>para <em>arrancar</em></h2>
+    <div class="next-steps">
+      <div class="next-step">
+        <div class="next-step-num">1</div>
+        <div class="next-step-title">Aprobar esta propuesta</div>
+        <div class="next-step-desc">Confirmar scope, términos y firmar el acuerdo de servicios.</div>
+      </div>
+      <div class="next-step">
+        <div class="next-step-num">2</div>
+        <div class="next-step-title">Anticipo</div>
+        <div class="next-step-desc">Pago del anticipo para agendar la fecha de inicio.</div>
+      </div>
+      <div class="next-step">
+        <div class="next-step-num">3</div>
+        <div class="next-step-title">Kickoff</div>
+        <div class="next-step-desc">Reunión inicial para accesos, contexto y primer entregable en [X] días.</div>
+      </div>
+    </div>
+    <a href="mailto:[EMAIL]?subject=Propuesta [NOMBRE PROYECTO]" class="cta-btn">
+      Aprobar propuesta →
+    </a>
+    <p class="footer-meta">
+      [NOMBRE EMPRESA / EQUIPO] · [EMAIL] · Propuesta válida hasta [FECHA]
+    </p>
+  </div>
+</section>
+
+<script>
+// ── Progress bar ──────────────────────────────────────────
+window.addEventListener('scroll', () => {
+  const scrolled = window.scrollY;
+  const total = document.documentElement.scrollHeight - window.innerHeight;
+  document.getElementById('progress-bar').style.width = (scrolled / total * 100) + '%';
+});
+
+// ── Section fade-in ───────────────────────────────────────
+const sections = document.querySelectorAll('section');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+      const id = e.target.id;
+      document.querySelectorAll('.nav-dot').forEach(d => d.classList.remove('active'));
+      const dot = document.querySelector(`[data-target="${id}"]`);
+      if (dot) dot.classList.add('active');
+    }
+  });
+}, { threshold: 0.3 });
+
+sections.forEach(s => observer.observe(s));
+
+// ── Nav dots ──────────────────────────────────────────────
+document.querySelectorAll('.nav-dot').forEach(dot => {
+  dot.addEventListener('click', () => {
+    const target = document.getElementById(dot.dataset.target);
+    if (target) target.scrollIntoView({ behavior: 'smooth' });
+  });
+});
+
+// ── Timeline animation ────────────────────────────────────
+const timelineObserver = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      setTimeout(() => {
+        document.getElementById('timeline-fill').style.width = '33%';
+      }, 400);
+    }
+  });
+}, { threshold: 0.5 });
+
+const timelineSection = document.getElementById('timeline');
+if (timelineSection) timelineObserver.observe(timelineSection);
+
+// ── Counter animation ─────────────────────────────────────
+const counterObserver = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.querySelectorAll('.mercado-stat-value').forEach(el => {
+        const val = el.textContent;
+        const num = parseFloat(val.replace(/[^0-9.]/g, ''));
+        if (isNaN(num)) return;
+        const suffix = val.replace(/[0-9.]/g, '');
+        let start = 0;
+        const step = num / 40;
+        const timer = setInterval(() => {
+          start += step;
+          if (start >= num) { el.textContent = val; clearInterval(timer); return; }
+          el.textContent = Math.floor(start) + suffix;
+        }, 30);
+      });
+    }
+  });
+}, { threshold: 0.5 });
+
+const mercadoSection = document.getElementById('mercado');
+if (mercadoSection) counterObserver.observe(mercadoSection);
+</script>
+</body>
+</html>

@@ -6,12 +6,11 @@
 ### 1. Code (Fases 6, 7) — automático
 Abre el tab Code apuntando a esta carpeta. Lee `.claude/rules/framework-rules.md` y `CLAUDE.md` automáticamente.
 
-### 2. Cowork (Fases 1, 3)
-Abre Cowork → New Project → selecciona la carpeta del proyecto.
-Lee `_context/framework.md` y `PROGRESS.md` automáticamente.
+### 2. Cowork (Fases 1, 2, 3, 4, 8)
+Cowork → New Project → selecciona esta carpeta → pega el contenido de `_context/framework.md` en las instrucciones del proyecto.
 
-### 3. Chat (Fases 2, 4, 8) — único paso manual
-App de Claude → tab Chat → Projects → New Project → Settings → Project Instructions → pega el `system-prompt.md` del framework.
+### 3. Design (Fase 5)
+Usa Claude Design para wireframes, diseño visual y prototipado.
 
 ## Estructura
 
@@ -22,15 +21,17 @@ App de Claude → tab Chat → Projects → New Project → Settings → Project
 
 ```
 
-| Fase | Herramienta | Modelo |
-|------|-------------|--------|
-| 1 · Investigación | Cowork | Claude Fable 5 |
-| 2 · Discovery | Chat | Claude Fable 5 |
-| 3 · Análisis de Mercado | Cowork | Claude Fable 5 |
-| 4 · Planificación Técnica | Chat | Claude Opus 4.8 |
-| 5 · Diseño / UX | Design | Claude Opus 4.8 |
-| 6 · MVP | Code | Claude Sonnet 5 |
-| 7 · Desarrollo Completo | Code | Claude Sonnet 5 |
-| 8 · Post-Lanzamiento | Chat / Code | Claude Sonnet 5 |
+| Fase | Nombre | Herramienta | Modelo |
+|------|--------|-------------|--------|
+| 0 | Project Audit (proyectos existentes) | Cowork | Fable 5 |
+| 1 | Investigación | Cowork | Fable 5 |
+| 2 | Discovery & Definición | Cowork | Fable 5 |
+| 3 | Análisis de Mercado | Cowork | Fable 5 |
+| — | Gate · Presentación al Cliente | Usuario | — |
+| 4 | Planificación Técnica | Cowork | Opus 4.8 |
+| 5 | Diseño / UX | Design | Opus 4.8 |
+| 6 | MVP | Code | Sonnet 5 |
+| 7 | Desarrollo Completo | Code | Sonnet 5 |
+| 8 | Post-Lanzamiento | Cowork + Code | Sonnet 5 |
 
 *Product Development Framework v2.0*

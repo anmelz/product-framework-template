@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git:*)",
+      "Bash(npm:*)",
+      "Bash(node:*)",
+      "Read(**)",
+      "Write(src/**)",
+      "Write(docs/**)",
+      "Write(CLAUDE.md)",
+      "Write(PROGRESS.md)",
+      "Write(_context/**)"
+    ],
+    "deny": [
+      "Bash(rm -rf *)",
+      "Write(.env*)",
+      "Write(.claude/settings.json)"
+    ]
+  }
+}

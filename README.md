@@ -1,5 +1,5 @@
 # [Nombre del Proyecto]
-> Creado desde el Product Development Framework Template v2.1.
+> Creado desde el Product Development Framework Template v2.0.
 
 ## Setup rápido
 

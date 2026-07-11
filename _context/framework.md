@@ -50,8 +50,8 @@ Herramienta: [Cowork / Design / Code]
 Antes de invertir en investigación, evalúa el prospecto (máx 30 min):
 - **BANT**: Budget, Autoridad, Necesidad, Timing — mínimo 3 de 4 para proceder
 - Búsqueda rápida: tamaño, industria, señales de capacidad de pago
-- Output: score go/no-go + track recomendado + registro en PIPELINE.md central
-- Si es no-go: registrar como descartado o nutrición, no invertir más
+- Output: score go/no-go + track recomendado
+- Si es no-go: descartar o guardar para nutrir más adelante, no invertir más
 
 ## Tracks
 
@@ -60,19 +60,20 @@ Antes de invertir en investigación, evalúa el prospecto (máx 30 min):
 
 ## Arquetipos de proyecto
 
-Al hacer Discovery, identifica el arquetipo: **SaaS MVP** · **Marketing + Producto** · **Plataforma interna** · **App móvil + backend** · **Custom**. Cada arquetipo tiene stack pre-decidido y estimaciones calibradas con datos de proyectos anteriores. En Fast Track, solo pregunta lo que difiere del patrón del arquetipo.
+Al hacer Discovery, identifica el arquetipo: **SaaS MVP** · **Marketing + Producto** · **Plataforma interna** · **App móvil + backend** · **Custom**. Cada arquetipo tiene stack pre-decidido. En Fast Track, solo pregunta lo que difiere del patrón del arquetipo.
 
 ---
 
 ## El Gate — Propuesta + Demo
 
 El Gate presenta DOS cosas:
-1. **Propuesta comercial** — usar el template client-proposal (HTML interactivo) con la paleta de colores del cliente (extraída de su web/branding o definida por el usuario)
-2. **Teaser demo** — 3–5 pantallas clave, clickeables, con el branding del prospecto. Con IA cuesta horas y multiplica la tasa de cierre.
+1. **Propuesta comercial** — HTML interactivo con la paleta de colores del cliente (extraída de su web/branding o definida por el usuario). Dos formatos disponibles en `_templates/`, elegir el que mejor encaje con el proyecto:
+   - `client-proposal-template.html` — formato scroll (secciones, barra de progreso, nav dots)
+   - `client-proposal-slides-template.html` — formato slides a pantalla completa (navegación por flechas/teclado/swipe), pensado para una presentación en vivo o enviada como link
+2. **Demo/prototipo** — interactivo, con el branding del prospecto, y con datos reales del cliente cuando estén disponibles (catálogo, flujos, cifras), no solo placeholders. No tiene que limitarse a 3–5 pantallas: entre más completo y anclado en su realidad operativa, más fuerte la propuesta y más alta la tasa de cierre. Con IA cuesta horas construirlo, así que el techo es la calidad, no el tiempo.
+   - Si el prototipo crece significativamente más allá de lo planeado en Fase 2/3 (nuevos módulos, datos reales extensos, alcance no discutido), pasa por **R3 Scope Creep**: evalúa impacto → presenta → espera "Confirmo scope change" → documenta en PROGRESS.md.
 
-Resultado del Gate → registrar SIEMPRE en `WINLOSS.md` central: ganado/perdido, objeciones, pricing ofrecido vs. cerrado, tiempo a decisión, aprendizaje.
-
-Si aprueba → generar SOW desde el template y proceder a Fase 4.
+Si aprueba → generar SOW desde el template y proceder a Fase 4. Si rechaza → regresar a Fase 2 con el feedback documentado en el artifact.
 
 ---
 
@@ -81,7 +82,7 @@ Si aprueba → generar SOW desde el template y proceder a Fase 4.
 **Fase 1:** contexto completo + investigación online + artifact inicial en `docs/artifact.html` + gaps documentados
 **Fase 2:** preguntas resueltas + visión/scope aprobados + arquetipo identificado + artifact actualizado
 **Fase 3:** competidores analizados + viabilidad confirmada + posicionamiento + artifact aprobado
-**Gate:** propuesta + demo presentados + resultado registrado en WINLOSS.md
+**Gate:** propuesta + demo presentados + resultado documentado en el artifact
 **Fase 4:** stack aprobado + arquitectura documentada + CLAUDE.md generado + estimaciones aceptadas
 **Fase 5:** flujos aprobados + wireframes + design system + prototipo aprobado
 **Fase 6:** MVP en staging + testing sin errores críticos + aprobación + feedback documentado
@@ -96,13 +97,12 @@ Si aprueba → generar SOW desde el template y proceder a Fase 4.
 3. **Scope Creep**: evalúa impacto → presenta → espera **"Confirmo scope change"** → actualiza.
 4. **Datos client-facing verificados**: todo dato cuantitativo en propuesta o demo (TAM, competidores, métricas) debe tener fuente citada o presentarse explícitamente como estimación. NUNCA presentar números sin respaldo como hechos.
 5. **Update semanal al cliente** (Fases 6–7): generar cada semana un update en lenguaje no técnico desde PROGRESS.md — qué se completó, qué sigue, decisiones pendientes. El usuario revisa y envía.
-6. **Calibración**: al cerrar cada fase de ejecución (5, 6, 7), registrar estimado vs. real en PROGRESS.md.
 
 ---
 
 ## Responsabilidades
 
-**Claude:** investigación, calificación BANT, preguntas de discovery, análisis de mercado con fuentes, propuesta con branding del cliente, demo teaser, CLAUDE.md, PROGRESS.md, updates semanales, registro win/loss, análisis de patrones de cierre.
+**Claude:** investigación, calificación BANT, preguntas de discovery, análisis de mercado con fuentes, propuesta con branding del cliente, demo teaser, CLAUDE.md, PROGRESS.md, updates semanales al cliente.
 
 **Usuario:** contexto inicial, decisión go/no-go final, aprobar cierres de fase, presentar propuesta+demo al cliente, reportar resultado del Gate, frases exactas de override/scope change, credenciales y pagos, decisiones de negocio.
 

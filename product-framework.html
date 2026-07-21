@@ -3659,7 +3659,7 @@
       <div class="section-title">Proyectos existentes — Onboarding & Backfill</div>
 
       <p style="font-size:13px; color:var(--text-secondary); line-height:1.7; margin-bottom:24px;">
-        Para proyectos que ya están iniciados o en producción, existe una <strong>Fase 0 de Auditoría</strong> que antecede al framework estándar. Claude evalúa el estado real del proyecto, mapea lo que existe a las fases del framework, identifica gaps, y genera un Backfill Plan con acciones obligatorias y opcionales.
+        Para proyectos que ya están iniciados o en producción, existe una <strong>Fase 0 de Auditoría</strong> que antecede al framework estándar. Claude evalúa el estado real del proyecto, mapea lo que existe a las fases del framework, identifica gaps, y genera un Backfill Plan con acciones obligatorias y opcionales. Tiene dos modos: <strong>Modo A</strong> — desde contexto (chats, docs, trabajo previo sin repo; se parte del template clonado) — y <strong>Modo B · Adopción</strong> — sobre un repo existente con código real: no se clona el template sino que el framework se inyecta al repo (overlay no destructivo), Code genera el CLAUDE.md retroactivo por ingeniería inversa del código, el <code>revisor-seguridad</code> audita contra R9, y el proyecto entra al framework en su fase real (típicamente 7 u 8).
       </p>
 
       <!-- Audit steps -->

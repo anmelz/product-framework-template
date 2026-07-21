@@ -3,8 +3,9 @@
 
 ## Setup rápido
 
-### 0. Al clonar este template
-Borra `FRAMEWORK-LOG.md`, `INSTRUCCIONES-COWORK.md` y `_trash/` si existen — son internos del repo del framework, no viajan con proyectos de cliente.
+### 0. Dos formas de empezar
+- **Proyecto nuevo:** clona este template. Borra `FRAMEWORK-LOG.md`, `INSTRUCCIONES-COWORK.md` y `_trash/` si existen — son internos del repo del framework.
+- **Proyecto existente con repo propio (adopción):** NO clones el template. Copia al repo existente: `.claude/` (rules + agents), `_context/framework.md`, `_templates/`, `PROGRESS.md` y la estructura `docs/`. No sobrescribas archivos del proyecto (CLAUDE.md/README existentes se fusionan). Luego corre la **Fase 0 · Modo B** (ver `_context/framework.md`): Code genera el CLAUDE.md real por ingeniería inversa del código, `revisor-seguridad` audita contra R9, y el proyecto entra al framework en su fase real.
 
 ### 1. Code (Fases 6, 7) — automático
 Abre el tab Code apuntando a esta carpeta. Lee `.claude/rules/framework-rules.md` y `CLAUDE.md` automáticamente.

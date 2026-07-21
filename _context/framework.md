@@ -234,12 +234,27 @@ Acción del usuario: [si aplica]
 
 ---
 
-## Proyectos existentes — Fase 0
+## Proyectos existentes — Fase 0 (dos modos)
+
+### Modo A · Desde contexto (chats, docs, trabajo previo sin repo)
 
 1. Usuario adjunta archivos (.md, .html, artifacts) — no texto en el prompt
 2. Mapea cada elemento a la fase correspondiente
 3. Backfill Plan: gaps obligatorios vs. opcionales (override)
-4. Aprobación → inicializar
+4. Aprobación → inicializar (se parte del template clonado)
+
+### Modo B · Adopción sobre repo existente (proyecto con código real, nunca corrió el framework)
+
+Aquí NO se clona el template — el framework se inyecta al repo existente y el código real es la fuente de verdad:
+
+1. **Overlay** (no destructivo): copiar al repo existente `.claude/rules/`, `.claude/agents/`, `_context/framework.md`, `_templates/`, `PROGRESS.md` (plantilla) y crear `docs/` (artifact, decisions, design). NUNCA sobrescribir archivos del proyecto: si ya existe un `CLAUDE.md` o `README.md`, se fusionan (lo del framework se agrega, lo del proyecto se conserva).
+2. **Ingeniería inversa con Code** — el código no miente: Code escanea el repo real y genera retroactivamente el `CLAUDE.md` desde el template (stack y versiones reales, arquitectura y estructura reales, integraciones detectadas, tabla de **Entornos** según lo realmente configurado/deployado, y perfil de **Seguridad** según los datos que maneja).
+3. **Auditoría de seguridad del código existente**: `revisor-seguridad` (Opus) audita contra el baseline R9. En proyectos que no nacieron en el framework, aquí suelen estar los hallazgos — este paso no se salta.
+4. **Mapeo a fases + Backfill Plan**: proyectos casi completos típicamente quedan con Fases 1–6 "✅ Completo (retroactivo)" y entran en Fase 7 u 8. Backfill obligatorio: CLAUDE.md real, PROGRESS.md sincronizado al estado real, entornos documentados (y separados si no lo estaban — hallazgo común), hallazgos críticos de seguridad resueltos. Backfill opcional (con override): artifact retroactivo, `docs/design/` retroactivo, análisis de mercado formal.
+   - **Artifact retroactivo — dos fuentes**: la parte funcional/técnica (qué hace el producto hoy, módulos, integraciones) sale del escaneo del código; la parte de negocio (cliente, visión, discovery, mercado, decisiones históricas) sale del contexto que aporte el usuario (chats, docs — como en Modo A). Lo que ninguna fuente pueda reconstruir se marca explícitamente como gap en el artifact — nunca se inventa (R7). Gaps relevantes → backfill; irrelevantes → override.
+5. **Aprobación del usuario** → el proyecto queda operando bajo el framework desde su fase real. Pegar `_context/framework.md` en las instrucciones del proyecto de Cowork.
+
+**Regla de entrada:** determina el modo por lo que existe — si hay repo con código, es Modo B aunque también haya chats previos (el contexto de chats se suma como input del artifact, pero el código manda).
 
 ---
 *Product Development Framework v2.2 — Instrucciones del Proyecto*

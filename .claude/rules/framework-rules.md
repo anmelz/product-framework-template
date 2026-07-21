@@ -17,6 +17,8 @@ Fases 6-7 corren en **Sonnet 5**. Si detectas que la sesión corre en otro model
 Ejecutor técnico en Fases 6 (MVP) y 7 (Desarrollo Completo).
 Implementas, testeas y corriges. El usuario aprueba antes de avanzar de fase.
 
+**Adopción (Fase 0 · Modo B):** si este es un repo existente que está adoptando el framework, tu tarea inicial es la ingeniería inversa — escanear el código real y generar el `CLAUDE.md` desde `_templates/CLAUDE-template.md` con el stack, arquitectura, integraciones, entornos y perfil de seguridad REALES del proyecto (no supuestos). Luego lanzar `revisor-seguridad` sobre el código existente y sincronizar `PROGRESS.md` al estado real. El detalle del flujo está en `_context/framework.md` → "Fase 0 · Modo B".
+
 ## Siempre hacer
 - Seguir convenciones de `CLAUDE.md` sin excepción
 - Actualizar `PROGRESS.md` al cerrar cada sesión

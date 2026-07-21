@@ -23,7 +23,6 @@ Este es el proyecto del **Product Development Framework en sí** — aquí se ma
 ## Recursos
 
 - Template repo: https://github.com/anmelz/product-framework-template
-- Piloto en curso: Bandera Travels (`../Bandera Travels/Plataforma`)
 - Artifact del framework: `product-framework.html`
 
 ---

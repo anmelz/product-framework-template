@@ -28,7 +28,7 @@
   }
 
   *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-  html { scroll-behavior: smooth; }
+  html { scroll-behavior: smooth; scroll-padding-top: 84px; }
 
   body {
     background: var(--bg);
@@ -1695,6 +1695,30 @@
 
   .gs-panel { width: 100%; }
 
+  /* Sub-pestañas de modo (proyecto existente) */
+  .mode-tabs {
+    display: flex;
+    gap: 4px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 24px;
+  }
+  .mode-tab {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-muted);
+    background: none;
+    border: none;
+    padding: 10px 16px;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    transition: all 0.15s ease;
+  }
+  .mode-tab:hover { color: var(--text-secondary); }
+  .mode-tab.active { color: var(--text-primary); border-bottom-color: var(--accent-2); }
+  .mode-panel { width: 100%; }
+
   .gs-step-group {
     margin-bottom: 32px;
     width: 100%;
@@ -1880,6 +1904,9 @@
     <a class="nav-item" href="#tools">
       <span>→</span> Herramientas por fase
     </a>
+    <a class="nav-item" href="#agents">
+      <span>→</span> Sistema de agentes
+    </a>
     <a class="nav-item" href="#github">
       <span>→</span> GitHub & Progreso
     </a>
@@ -2025,106 +2052,157 @@
       <!-- EXISTING PROJECT -->
       <div id="gs-existing" class="gs-panel" style="display:none;">
 
-        <div class="gs-step-group">
-          <div class="gs-step-group-title">Paso 1 · Crea la carpeta local y clona el repo existente</div>
-          <div class="gs-checklist">
-            <div class="gs-check-item">
-              <span class="gs-check-box">☐</span>
-              <div>
-                <div class="gs-check-title">Crear carpeta con estructura Cliente/Proyecto</div>
-                <div class="gs-check-desc">Crea la carpeta siguiendo la estructura <span class="code-inline">~/Projects/NombreCliente/NombreProyecto</span>. Ejemplo: <span class="code-inline">~/Projects/AcmeCorp/Dashboard</span>. Esta separación permite tener varios proyectos del mismo cliente organizados.</div>
+        <p style="font-size:12.5px; color:var(--text-secondary); line-height:1.7; margin-bottom:16px;">
+          Primera decisión: <strong>¿existe un repositorio con código real?</strong> Si sí → <strong>Modo B</strong> (el código manda, aunque también haya chats o docs — ese contexto se suma después). Si solo hay chats, documentos o trabajo previo sin repo → <strong>Modo A</strong>.
+        </p>
+
+        <div class="mode-tabs">
+          <button class="mode-tab active" onclick="switchMode(this, 'a')">📄 Modo A · Desde contexto (sin repo)</button>
+          <button class="mode-tab" onclick="switchMode(this, 'b')">🧬 Modo B · Adopción de repo existente</button>
+        </div>
+
+        <!-- ══════════ MODO A ══════════ -->
+        <div id="mode-a" class="mode-panel">
+
+          <div class="gs-step-group">
+            <div class="gs-step-group-title">Paso 1 · Crea la carpeta y clona el TEMPLATE (igual que un proyecto nuevo)</div>
+            <div class="gs-checklist">
+              <div class="gs-check-item">
+                <span class="gs-check-box">☐</span>
+                <div>
+                  <div class="gs-check-title">Carpeta <span class="code-inline">~/Projects/NombreCliente/NombreProyecto</span> + clonar el template</div>
+                  <div class="gs-check-desc">Como no hay repo previo, el proyecto nace del template: en Code, clona <span class="code-inline">https://github.com/anmelz/product-framework-template</span> en la carpeta y borra los meta-archivos (<span class="code-inline">FRAMEWORK-LOG.md</span>, <span class="code-inline">INSTRUCCIONES-COWORK.md</span>).</div>
+                </div>
               </div>
             </div>
+          </div>
+
+          <div class="gs-step-group">
+            <div class="gs-step-group-title">Paso 2 · <span class="tool-pill cowork">Cowork</span> Crea el proyecto y pega las instrucciones</div>
+            <div class="gs-checklist">
+              <div class="gs-check-item">
+                <span class="gs-check-box">☐</span>
+                <div>
+                  <div class="gs-check-title">Cowork → New Project → seleccionar la carpeta → pegar <span class="code-inline">_context/framework.md</span> en las instrucciones</div>
+                  <div class="gs-check-desc">Cowork no lee archivos de instrucciones automáticamente — el pegado manual es obligatorio. Cada miembro del equipo repite este paso en su copia local.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="gs-step-group">
+            <div class="gs-step-group-title">Paso 3 · Recopila el contexto existente</div>
+            <div class="gs-checklist">
+              <div class="gs-check-item">
+                <span class="gs-check-box">☐</span>
+                <div>
+                  <div class="gs-check-title">Reunir todos los archivos que describan el estado del proyecto</div>
+                  <div class="gs-check-desc">Documentación, artifacts anteriores, decisiones, propuestas previas, wireframes exportados, resúmenes de chats — como archivos <span class="code-inline">.md</span> o <span class="code-inline">.html</span> (PDFs e imágenes también funcionan). Se adjuntan, no se pegan en el prompt.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="gs-step-group">
+            <div class="gs-step-group-title">Paso 4 · <span class="tool-pill cowork">Cowork</span> Arranca la Fase 0 · Modo A</div>
+            <div class="gs-template" style="margin-top:12px;">
+              <div class="gs-template-header">
+                <span class="gs-template-label">Plantilla · Primer mensaje — Fase 0 · Modo A</span>
+                <span style="color:var(--text-muted); font-size:11px;">Adjunta los archivos + envía este mensaje</span>
+              </div>
+              <div class="gs-template-body">
+                <span class="gs-tmpl-tag">Proyecto existente · Fase 0 · Modo A (desde contexto)</span><br><br>
+                <span style="color:var(--text-muted);">**Cliente / Proyecto:** [nombre]</span><br><br>
+                <span style="color:var(--text-muted);">**Archivos adjuntos:**</span><br>
+                <span style="color:var(--text-muted);">- [archivo.md] — [qué contiene]</span><br>
+                <span style="color:var(--text-muted);">- [artifact.html] — [qué contiene]</span><br><br>
+                <span style="color:var(--text-muted);">**Estado actual en una línea:**</span><br>
+                <span style="color:var(--text-muted);">[Ej: discovery avanzado en chats, sin código aún]</span><br><br>
+                <span style="color:var(--text-muted);">**Problemas o deudas conocidas:**</span><br>
+                <span style="color:var(--text-muted);">[Lo que el equipo sabe que no está bien o falta]</span><br><br>
+                <span style="color:var(--text-muted);">Mapea cada elemento a su fase, genera el Backfill Plan (obligatorios vs. opcionales) y preséntamelo para aprobación.</span>
+              </div>
+            </div>
+            <p style="font-size:12px; color:var(--text-muted); line-height:1.6; margin-top:12px;">Claude mapea lo adjuntado a las fases, propone el Backfill Plan, y con tu aprobación inicializa artifact y PROGRESS.md. El proyecto continúa desde su fase real.</p>
           </div>
         </div>
 
-        <div class="gs-step-group">
-          <div class="gs-step-group-title">Paso 2 · <span class="tool-pill code">Code</span> Clona el repo existente y agrega la estructura del framework</div>
-          <div class="gs-checklist">
-            <div class="gs-check-item">
-              <span class="gs-check-box">☐</span>
-              <div>
-                <div class="gs-check-title">Abrir Code apuntando a la carpeta del proyecto</div>
-                <div class="gs-check-desc">Abre la app de Claude → tab Code → selecciona la carpeta creada. Luego envía este mensaje:</div>
-              </div>
-            </div>
-          </div>
-          <div class="gs-template" style="margin-top:12px;">
-            <div class="gs-template-header">
-              <span class="gs-template-label">Mensaje para Code — proyecto existente</span>
-            </div>
-            <div class="gs-template-body">
-              <span class="gs-tmpl-tag">Setup framework en proyecto existente</span><br><br>
-              <span style="color:var(--text-muted);">Clona el repositorio existente en esta carpeta:</span><br>
-              <span style="color:var(--text-muted);">git clone [url-repo-existente] .</span><br><br>
-              <span style="color:var(--text-muted);">Luego agrega la estructura del framework que falta del template (https://github.com/anmelz/product-framework-template):</span><br>
-              <span style="color:var(--text-muted);">- .claude/rules/framework-rules.md</span><br>
-              <span style="color:var(--text-muted);">- _context/framework.md</span><br>
-              <span style="color:var(--text-muted);">- PROGRESS.md (si no existe)</span><br>
-              <span style="color:var(--text-muted);">- docs/ y docs/decisions/ (si no existen)</span><br><br>
-              <span style="color:var(--text-muted);">No toques los archivos existentes del proyecto.</span>
-            </div>
-          </div>
-          <p style="font-size:12px; color:var(--text-muted); line-height:1.6; margin-top:12px;">Code agrega solo los archivos del framework que faltan sin tocar el código existente. Desde este momento Code tiene el contexto del framework automáticamente.</p>
-        </div>
+        <!-- ══════════ MODO B ══════════ -->
+        <div id="mode-b" class="mode-panel" style="display:none;">
 
-        <div class="gs-step-group">
-          <div class="gs-step-group-title">Paso 3 · <span class="tool-pill cowork">Cowork</span> Crea el proyecto y pega las instrucciones</div>
-          <div class="gs-checklist">
-            <div class="gs-check-item">
-              <span class="gs-check-box">☐</span>
-              <div>
-                <div class="gs-check-title">Cowork → New Project → seleccionar la carpeta del proyecto</div>
-                <div class="gs-check-desc">Crea el proyecto en Cowork apuntando a la carpeta local del repositorio.</div>
-              </div>
-            </div>
-            <div class="gs-check-item">
-              <span class="gs-check-box">☐</span>
-              <div>
-                <div class="gs-check-title">Pegar el contenido de <span class="code-inline">_context/framework.md</span> en las instrucciones del proyecto</div>
-                <div class="gs-check-desc">Al crear el proyecto hay una sección de instrucciones — pega ahí el contenido de <span class="code-inline">_context/framework.md</span>. Como Code agregó ese archivo en el Paso 2, ya está disponible en la carpeta del proyecto. Cada miembro del equipo repite este paso en su propia copia local.</div>
+          <div class="gs-step-group">
+            <div class="gs-step-group-title">Paso 1 · Crea la carpeta y clona el repo EXISTENTE (no el template)</div>
+            <div class="gs-checklist">
+              <div class="gs-check-item">
+                <span class="gs-check-box">☐</span>
+                <div>
+                  <div class="gs-check-title">Carpeta <span class="code-inline">~/Projects/NombreCliente/NombreProyecto</span></div>
+                  <div class="gs-check-desc">El repo del proyecto es la base — el framework se le inyecta encima en el siguiente paso, sin tocar su código.</div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
-        <div class="gs-step-group">
-          <div class="gs-step-group-title">Paso 4 · Recopila el contexto existente y arranca la Fase 0 en Cowork</div>
-          <p style="font-size:12.5px; color:var(--text-secondary); line-height:1.7; margin-bottom:14px;">El Project Audit se hace en Cowork. En vez de copiar y pegar contexto en el prompt, adjunta los archivos directamente — Cowork lee <span class="code-inline">.md</span> y <span class="code-inline">.html</span> sin problema. Organiza los archivos antes de empezar.</p>
-          <div class="gs-checklist">
-            <div class="gs-check-item">
-              <span class="gs-check-box">☐</span>
-              <div>
-                <div class="gs-check-title">Recopilar los archivos de contexto</div>
-                <div class="gs-check-desc">Documentación del producto, artifacts anteriores, decisiones técnicas, READMEs, propuestas previas, wireframes exportados — cualquier archivo <span class="code-inline">.md</span> o <span class="code-inline">.html</span> que describa el estado del proyecto. PDFs e imágenes también funcionan.</div>
+          <div class="gs-step-group">
+            <div class="gs-step-group-title">Paso 2 · <span class="tool-pill code">Code</span> Overlay + ingeniería inversa + auditoría</div>
+            <div class="gs-template" style="margin-top:12px;">
+              <div class="gs-template-header">
+                <span class="gs-template-label">Mensaje para Code — Fase 0 · Modo B</span>
+              </div>
+              <div class="gs-template-body">
+                <span class="gs-tmpl-tag">Adopción del framework (Fase 0 · Modo B) — overlay + ingeniería inversa</span><br><br>
+                <span style="color:var(--text-muted);">Clona el repositorio existente en esta carpeta:</span><br>
+                <span style="color:var(--text-muted);">git clone [url-repo-existente] .</span><br><br>
+                <span style="color:var(--text-muted);">1. OVERLAY — agrega del template (https://github.com/anmelz/product-framework-template) lo que falte, SIN sobrescribir archivos del proyecto (CLAUDE.md/README existentes se fusionan):</span><br>
+                <span style="color:var(--text-muted);">- .claude/rules/framework-rules.md y .claude/agents/ (los 5 agentes)</span><br>
+                <span style="color:var(--text-muted);">- _context/framework.md y _templates/</span><br>
+                <span style="color:var(--text-muted);">- PROGRESS.md (plantilla) y docs/ con decisions/ y design/</span><br><br>
+                <span style="color:var(--text-muted);">2. INGENIERÍA INVERSA — escanea el código real y genera el CLAUDE.md desde _templates/CLAUDE-template.md con el stack, arquitectura, integraciones, tabla de Entornos y perfil de Seguridad REALES del proyecto (no supuestos).</span><br><br>
+                <span style="color:var(--text-muted);">3. AUDITORÍA — lanza el agente revisor-seguridad sobre el código existente contra el baseline R9 y repórtame los hallazgos por severidad.</span><br><br>
+                <span style="color:var(--text-muted);">4. Sincroniza PROGRESS.md al estado real del proyecto y muéstrame el resultado.</span>
+              </div>
+            </div>
+            <p style="font-size:12px; color:var(--text-muted); line-height:1.6; margin-top:12px;">Code hace el overlay sin tocar el código, genera el CLAUDE.md real leyendo el codebase (el código no miente), y audita la seguridad de lo ya construido — en proyectos que no nacieron en el framework, ahí suelen estar los hallazgos.</p>
+          </div>
+
+          <div class="gs-step-group">
+            <div class="gs-step-group-title">Paso 3 · <span class="tool-pill cowork">Cowork</span> Crea el proyecto y pega las instrucciones</div>
+            <div class="gs-checklist">
+              <div class="gs-check-item">
+                <span class="gs-check-box">☐</span>
+                <div>
+                  <div class="gs-check-title">Cowork → New Project → seleccionar la carpeta → pegar <span class="code-inline">_context/framework.md</span> en las instrucciones</div>
+                  <div class="gs-check-desc">El archivo ya está en la carpeta (lo agregó Code en el Paso 2). El pegado manual es obligatorio — Cowork no lo lee automáticamente.</div>
+                </div>
               </div>
             </div>
           </div>
-          <div class="gs-template" style="margin-top:12px;">
-            <div class="gs-template-header">
-              <span class="gs-template-label">Plantilla · Primer mensaje en Cowork — Fase 0 · Project Audit</span>
-              <span style="color:var(--text-muted); font-size:11px;">Adjunta los archivos + envía este mensaje</span>
+
+          <div class="gs-step-group">
+            <div class="gs-step-group-title">Paso 4 · <span class="tool-pill cowork">Cowork</span> Contexto de negocio + cierre de Fase 0</div>
+            <p style="font-size:12.5px; color:var(--text-secondary); line-height:1.7; margin-bottom:14px;">Code ya reconstruyó la parte técnica desde el código. Lo que el código NO puede decir — cliente, visión, discovery, mercado, decisiones históricas — viene de ti: adjunta los archivos que existan. El artifact retroactivo se arma con esas dos fuentes; lo irreconstruible se marca como gap — nunca se inventa (R7).</p>
+            <div class="gs-template" style="margin-top:12px;">
+              <div class="gs-template-header">
+                <span class="gs-template-label">Plantilla · Cierre de Fase 0 · Modo B en Cowork</span>
+                <span style="color:var(--text-muted); font-size:11px;">Adjunta el contexto de negocio + envía este mensaje</span>
+              </div>
+              <div class="gs-template-body">
+                <span class="gs-tmpl-tag">Proyecto existente · Fase 0 · Modo B (cierre)</span><br><br>
+                <span style="color:var(--text-muted);">**Cliente / Proyecto:** [nombre]</span><br>
+                <span style="color:var(--text-muted);">Code ya completó el overlay, el CLAUDE.md real y la auditoría de seguridad (ver PROGRESS.md y hallazgos).</span><br><br>
+                <span style="color:var(--text-muted);">**Contexto de negocio adjunto:**</span><br>
+                <span style="color:var(--text-muted);">- [docs, resúmenes de chats, propuestas previas...]</span><br><br>
+                <span style="color:var(--text-muted);">Arma el artifact retroactivo con las dos fuentes (código + contexto), marca los gaps sin inventar, mapea las fases al estado real, y preséntame el Backfill Plan (obligatorios vs. opcionales) para aprobación.</span>
+              </div>
             </div>
-            <div class="gs-template-body">
-              <span class="gs-tmpl-tag">Proyecto existente · Fase 0 · Project Audit</span><br><br>
-              <span style="color:var(--text-muted);">**Cliente / Proyecto:** [nombre]</span><br>
-              <span style="color:var(--text-muted);">**Repositorio GitHub:** [url]</span><br><br>
-              <span style="color:var(--text-muted);">**Archivos adjuntos:**</span><br>
-              <span style="color:var(--text-muted);">- [archivo.md] — [qué contiene]</span><br>
-              <span style="color:var(--text-muted);">- [artifact.html] — [qué contiene]</span><br>
-              <span style="color:var(--text-muted);">- [decisions.md] — [qué contiene]</span><br><br>
-              <span style="color:var(--text-muted);">**Estado actual en una línea:**</span><br>
-              <span style="color:var(--text-muted);">[Ej: MVP en desarrollo, diseño aprobado, sin análisis de mercado formal]</span><br><br>
-              <span style="color:var(--text-muted);">**Problemas o deudas conocidas:**</span><br>
-              <span style="color:var(--text-muted);">[Lo que el equipo sabe que no está bien o necesita revisarse]</span>
-            </div>
+            <p style="font-size:12px; color:var(--text-muted); line-height:1.6; margin-top:12px;">Con tu aprobación del Backfill Plan, el proyecto queda operando bajo el framework desde su fase real — típicamente Fase 7 u 8 si está casi completo.</p>
           </div>
         </div>
 
       </div>
     </section>
     <section id="hero" class="hero">
-      <div class="hero-eyebrow">Framework · Versión 1.0</div>
+      <div class="hero-eyebrow">Framework · Versión 2.2</div>
       <h1>Product<br><span>Development</span><br>Framework</h1>
       <p class="hero-desc">
         Proceso estándar para el desarrollo de productos digitales. Define cómo se investiga, planifica, diseña y construye cada proyecto, con soporte de Claude en cada etapa.
@@ -2185,7 +2263,7 @@
                   <span class="output-tag">🎯 Score de calificación</span>
                   <span class="output-tag">🛤️ Track recomendado</span>
                 </div>
-                <p style="font-size:12px; color: var(--text-muted); line-height:1.6">Si es no-go, el prospecto se descarta o se guarda para nutrir más adelante — sin invertir más. Si es go, se define el track y se procede al setup.</p>
+                <p style="font-size:12px; color: var(--text-muted); line-height:1.6">Si es no-go, la evaluación queda en la carpeta donde se creó con etiqueta visible: archivo <span class="code-inline">NO-GO.md</span> (score BANT, motivo, fecha) y prefijo <span class="code-inline">[NO-GO]</span> en el nombre de la carpeta — así no se repite la evaluación si el prospecto vuelve. Sin invertir más. Si es go, se define el track y se procede al setup.</p>
               </div>
               <div class="phase-section full-width">
                 <div class="phase-section-title">Criterios de calificación — mínimo 3 de 4 para proceder</div>
@@ -3069,6 +3147,62 @@
       </div>
     </section>
     <!-- GitHub & Progress -->
+    <!-- Agent System -->
+    <section id="agents" style="margin-top: 48px;">
+      <div class="section-title">Sistema de agentes — paralelización</div>
+
+      <p style="font-size:13px; color:var(--text-secondary); line-height:1.7; margin-bottom:24px;">
+        Cada proyecto trae agentes especializados en <span class="code-inline">.claude/agents/</span>, cada uno con su modelo asignado por frontmatter. La <strong>sesión principal es el orquestador</strong>: conserva el contexto completo, habla con el usuario y toma las decisiones — los agentes son trabajadores especializados que ejecutan y reportan, pero no deciden. Se paraleliza lo independiente; se serializa lo compartido.
+      </p>
+
+      <div class="model-table" style="margin-bottom: 24px;">
+        <div class="model-row header" style="grid-template-columns: 160px 90px 90px 1fr;">
+          <span>Agente</span>
+          <span>Modelo</span>
+          <span>Fases</span>
+          <span>Rol</span>
+        </div>
+        <div class="model-row" style="grid-template-columns: 160px 90px 90px 1fr;">
+          <span style="color:var(--text-primary); font-weight:600; font-size:13px;">investigador</span>
+          <span style="color:var(--text-secondary); font-size:12px;">Sonnet 5</span>
+          <span style="color:var(--text-secondary); font-size:12px;">1, 3</span>
+          <span style="color:var(--text-secondary); font-size:12px;">Investigación fan-out: uno por objetivo (competidor, mercado/TAM, prospecto), en paralelo. Todo dato con fuente (R7).</span>
+        </div>
+        <div class="model-row" style="grid-template-columns: 160px 90px 90px 1fr;">
+          <span style="color:var(--text-primary); font-weight:600; font-size:13px;">implementador</span>
+          <span style="color:var(--text-secondary); font-size:12px;">Sonnet 5</span>
+          <span style="color:var(--text-secondary); font-size:12px;">6, 7</span>
+          <span style="color:var(--text-secondary); font-size:12px;">Una feature/módulo por agente; en paralelo SOLO si no comparten archivos. Si necesita tocar algo compartido, lo reporta — no lo cambia.</span>
+        </div>
+        <div class="model-row" style="grid-template-columns: 160px 90px 90px 1fr;">
+          <span style="color:var(--text-primary); font-weight:600; font-size:13px;">tester</span>
+          <span style="color:var(--text-secondary); font-size:12px;">Sonnet 5</span>
+          <span style="color:var(--text-secondary); font-size:12px;">6, 7</span>
+          <span style="color:var(--text-secondary); font-size:12px;">Tests de features terminadas, en paralelo con el desarrollo de otras. Reporta bugs con reproducción — no corrige código de producción.</span>
+        </div>
+        <div class="model-row" style="grid-template-columns: 160px 90px 90px 1fr;">
+          <span style="color:var(--text-primary); font-weight:600; font-size:13px;">revisor-seguridad</span>
+          <span style="color:var(--text-secondary); font-size:12px;">Opus 4.8</span>
+          <span style="color:var(--text-secondary); font-size:12px;">6, 7</span>
+          <span style="color:var(--text-secondary); font-size:12px;">Auditoría contra el baseline R9. Solo lee y reporta con archivo:línea. Obligatorio antes de cerrar Fase 6 y 7 — y sobre el código existente en adopciones (Fase 0 · Modo B).</span>
+        </div>
+        <div class="model-row" style="grid-template-columns: 160px 90px 90px 1fr;">
+          <span style="color:var(--text-primary); font-weight:600; font-size:13px;">verificador-qa</span>
+          <span style="color:var(--text-secondary); font-size:12px;">Sonnet 5</span>
+          <span style="color:var(--text-secondary); font-size:12px;">Todas</span>
+          <span style="color:var(--text-secondary); font-size:12px;">Verifica los criterios de salida (R1) contra el estado real del proyecto, con evidencia citada. Sin registro de aprobación = criterio NO cumplido.</span>
+        </div>
+      </div>
+
+      <div class="enforce-banner" style="border-color: rgba(0,201,167,0.25); background: rgba(0,201,167,0.05);">
+        <div class="enforce-banner-icon">⚡</div>
+        <div>
+          <div class="enforce-banner-title" style="color:var(--accent-2);">Reglas de paralelización</div>
+          <div class="enforce-banner-desc">Se paraleliza lo <strong>independiente</strong>: investigación por objetivo, features sin archivos compartidos, tests de una feature vs. desarrollo de otra, seguridad junto al desarrollo. Se serializa lo que <strong>comparte estado</strong>: schema/migraciones, config global, layout y componentes compartidos — nunca dos agentes a la vez. Cada agente arranca sin contexto: recibe la spec completa. Y más agentes no siempre es mejor — si las tareas son dependientes, paralelizar solo suma costo; ante la duda, serializa.</div>
+        </div>
+      </div>
+    </section>
+
     <section id="github" style="margin-top: 48px;">
       <div class="section-title">GitHub & Registro de progreso</div>
 
@@ -3179,7 +3313,7 @@
       <div class="section-title">Propuesta Comercial — Gate al Cliente</div>
 
       <p style="font-size:13px; color:var(--text-secondary); line-height:1.7; margin-bottom:20px;">
-        La sección de propuesta para el cliente en el artifact debe ser completa para que el gate sea efectivo. El cliente no puede tomar una decisión informada sin estos componentes.
+        La sección de propuesta para el cliente en el artifact debe ser completa para que el gate sea efectivo. El cliente no puede tomar una decisión informada sin estos componentes. La propuesta se entrega como HTML interactivo con el branding del cliente, en uno de los dos formatos de <span class="code-inline">_templates/</span>: <strong>scroll</strong> (<span class="code-inline">client-proposal-template.html</span> — secciones con barra de progreso y nav dots) o <strong>slides</strong> (<span class="code-inline">client-proposal-slides-template.html</span> — pantalla completa con navegación por flechas/teclado/swipe, ideal para presentar en vivo o enviar como link).
       </p>
 
       <div class="model-table">
@@ -3450,7 +3584,7 @@
         <div class="enforce-banner-icon">⚙️</div>
         <div>
           <div class="enforce-banner-title" style="color:var(--accent);">Dónde va este contenido</div>
-          <div class="enforce-banner-desc">En La app de Claude → abre el Project del cliente → Settings → Project Instructions → pega el contenido del archivo <span class="code-inline">system-prompt.md</span>. Todos los miembros del equipo que accedan al proyecto recibirán automáticamente estas instrucciones en cada conversación.</div>
+          <div class="enforce-banner-desc">En la app de Claude → Cowork → abre el Project del cliente → Settings → Project Instructions → pega el contenido del archivo <span class="code-inline">_context/framework.md</span>. Todos los miembros del equipo que accedan al proyecto recibirán automáticamente estas instrucciones en cada conversación. Recordar re-pegarlo cuando el framework cambie de versión.</div>
         </div>
       </div>
 
@@ -3663,7 +3797,7 @@
       </p>
 
       <!-- Audit steps -->
-      <div style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-muted); margin-bottom:12px;">Fase 0 · Project Audit — 4 pasos</div>
+      <div style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-muted); margin-bottom:12px;">Modo A · Desde contexto (chats, docs, sin repo) — 4 pasos</div>
       <div class="audit-flow">
         <div class="audit-step">
           <div class="audit-step-num">01</div>
@@ -3684,6 +3818,36 @@
           <div class="audit-step-num">04</div>
           <div class="audit-step-title">Inicialización</div>
           <div class="audit-step-desc">Una vez aprobado el Backfill Plan, Claude inicializa el framework: crea el PROGRESS.md, genera el artifact con lo que existe, y configura el repo en GitHub.</div>
+        </div>
+      </div>
+
+      <!-- Modo B: Adopción -->
+      <div style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-muted); margin:28px 0 12px;">Modo B · Adopción sobre repo existente (código real, nunca corrió el framework) — 5 pasos</div>
+      <div class="audit-flow">
+        <div class="audit-step">
+          <div class="audit-step-num">01</div>
+          <div class="audit-step-title">Overlay no destructivo</div>
+          <div class="audit-step-desc">NO se clona el template: se copian al repo existente .claude/ (rules + agents), _context/framework.md, _templates/, PROGRESS.md y docs/. Nunca se sobrescriben archivos del proyecto — CLAUDE.md o README existentes se fusionan.</div>
+        </div>
+        <div class="audit-step">
+          <div class="audit-step-num">02</div>
+          <div class="audit-step-title">Ingeniería inversa (Code)</div>
+          <div class="audit-step-desc">El código no miente: Code escanea el repo real y genera el CLAUDE.md retroactivo — stack y versiones reales, arquitectura real, integraciones detectadas, tabla de Entornos según lo deployado y perfil de Seguridad según los datos que maneja.</div>
+        </div>
+        <div class="audit-step">
+          <div class="audit-step-num">03</div>
+          <div class="audit-step-title">Auditoría de seguridad</div>
+          <div class="audit-step-desc">revisor-seguridad (Opus) audita el código existente contra el baseline R9. En proyectos que no nacieron en el framework, aquí suelen estar los hallazgos — este paso no se salta.</div>
+        </div>
+        <div class="audit-step">
+          <div class="audit-step-num">04</div>
+          <div class="audit-step-title">Mapeo + Backfill</div>
+          <div class="audit-step-desc">Fases 1–6 quedan "Completo (retroactivo)" y el proyecto entra en Fase 7 u 8. Obligatorio: CLAUDE.md real, PROGRESS sincronizado, entornos separados, críticos de seguridad resueltos. El artifact retroactivo usa dos fuentes: el código (funcional/técnico) y el contexto del usuario (negocio); lo irreconstruible se marca como gap — nunca se inventa (R7).</div>
+        </div>
+        <div class="audit-step">
+          <div class="audit-step-num">05</div>
+          <div class="audit-step-title">Aprobación y operación</div>
+          <div class="audit-step-desc">El usuario aprueba y el proyecto queda operando bajo el framework desde su fase real. Se pega _context/framework.md en las instrucciones del proyecto de Cowork. Regla de entrada: si hay repo con código, es Modo B aunque existan chats — el código manda.</div>
         </div>
       </div>
 
@@ -3745,9 +3909,10 @@
 function togglePhase(header) {
   header.parentElement.classList.toggle('open');
 }
+var PHASE_IDS = ['phase-1','phase-2','phase-3','phase-4','phase-5','phase-6','phase-7','phase-8'];
 function openPhase(i) {
-  var cards = document.querySelectorAll('.phase-card');
-  if (cards[i]) cards[i].classList.add('open');
+  var card = document.getElementById(PHASE_IDS[i]);
+  if (card) card.classList.add('open');
 }
 function switchTab(btn, name) {
   document.querySelectorAll('.gs-tab').forEach(function (b) { b.classList.remove('active'); });
@@ -3756,13 +3921,48 @@ function switchTab(btn, name) {
   var panel = document.getElementById('gs-' + name);
   if (panel) panel.style.display = 'block';
 }
+function switchMode(btn, name) {
+  document.querySelectorAll('.mode-tab').forEach(function (b) { b.classList.remove('active'); });
+  btn.classList.add('active');
+  document.querySelectorAll('.mode-panel').forEach(function (p) { p.style.display = 'none'; });
+  var panel = document.getElementById('mode-' + name);
+  if (panel) panel.style.display = 'block';
+}
 var navLinks = document.querySelectorAll('nav .nav-item');
 navLinks.forEach(function (link) {
-  link.addEventListener('click', function () {
+  link.addEventListener('click', function (e) {
     navLinks.forEach(function (l) { l.classList.remove('active'); });
     link.classList.add('active');
+    var href = link.getAttribute('href');
+    if (href && href.charAt(0) === '#') {
+      var target = document.querySelector(href);
+      if (target) {
+        e.preventDefault();
+        // Esperar un frame para que cualquier expansión (openPhase) ya haya cambiado el layout
+        requestAnimationFrame(function () {
+          target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+        history.replaceState(null, '', href);
+      }
+    }
   });
 });
+
+// Reveal-on-scroll: las secciones arrancan en opacity 0 y se muestran al entrar al viewport
+var revealSections = document.querySelectorAll('section[id]');
+if ('IntersectionObserver' in window) {
+  var sectionObserver = new IntersectionObserver(function (entries) {
+    entries.forEach(function (entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('section-visible');
+        sectionObserver.unobserve(entry.target);
+      }
+    });
+  }, { rootMargin: '0px 0px -8% 0px', threshold: 0 });
+  revealSections.forEach(function (s) { sectionObserver.observe(s); });
+} else {
+  revealSections.forEach(function (s) { s.classList.add('section-visible'); });
+}
 </script>
 </body>
 </html>

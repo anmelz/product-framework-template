@@ -8,13 +8,11 @@
 | Campo | Valor |
 |-------|-------|
 | **Versión** | v2.2 |
-| **Piloto en curso** | Bandera Travels (Plataforma) — en Gate |
 | **Repo** | https://github.com/anmelz/product-framework-template |
 
 ## Pendientes
-1. Probar el framework end-to-end con un proyecto real — en curso (piloto Bandera Travels, sin completar).
-2. Commit + push de v2.2 en el repo del template (Code corre el integrity sweep primero). El commit del piloto Bandera queda diferido a la próxima sesión de ese proyecto (sus archivos v2.2 ya están en disco).
-3. Usuario: pegar `INSTRUCCIONES-COWORK.md` en las instrucciones del proyecto del framework en Cowork; re-pegar `_context/framework.md` v2.2 en las de Bandera cuando se retome ese proyecto.
+1. Probar el framework end-to-end con un proyecto real — en curso (el usuario lo gestiona fuera de este proyecto); traer las fricciones de vuelta a este log.
+2. Usuario: pegar `INSTRUCCIONES-COWORK.md` en las instrucciones del proyecto del framework en Cowork.
 
 ## Descartado / en pausa
 - **Starter kit repo** — en pausa. Retomar tras cerrar el piloto, para basarlo en patrones reales.
@@ -23,10 +21,10 @@
 - **Update semanal al cliente (ex-R8)** — regla eliminada del framework (2026-07-10).
 - **Fricción git/OneDrive en Windows** — en segundo plano; el usuario la revisará (locks de `.git/index` y permisos de borrado, vistos en template y piloto).
 
-## Incorporado desde pilotos y proyectos reales
+## Incorporado desde proyectos reales
 > Los gaps cubiertos en v2.1→v2.2 provienen de feedback de proyectos reales del usuario (documentados y no documentados en este log).
 
-- Template `_templates/client-proposal-slides-template.html` — propuesta en slides (del piloto Bandera), alternativa al formato scroll.
+- Template `_templates/client-proposal-slides-template.html` — propuesta en slides, alternativa al formato scroll.
 - Estándar del prototipo del Gate: sin tope de 3–5 pantallas; crecimiento controlado por R8 (Scope Creep).
 
 ## Log de sesiones

@@ -97,4 +97,4 @@ Cualquiera de las partes puede terminar con [X] días de aviso escrito. En caso 
 | Firma: | Firma: |
 
 ---
-*Product Development Framework v2.0 — SOW Template*
+*Product Development Framework v2.2 — SOW Template*

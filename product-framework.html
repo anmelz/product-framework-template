@@ -1,0 +1,3768 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Product Development Framework</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0C0E14;
+    --surface: #13151F;
+    --elevated: #1C1F2E;
+    --border: #252840;
+    --border-bright: #353860;
+    --accent: #7B6EF6;
+    --accent-glow: rgba(123, 110, 246, 0.15);
+    --accent-2: #00C9A7;
+    --accent-2-glow: rgba(0, 201, 167, 0.12);
+    --text-primary: #E8E9F3;
+    --text-secondary: #7B7F9E;
+    --text-muted: #4A4E6A;
+    --phase-1: #7B6EF6;
+    --phase-2: #5B8EF4;
+    --phase-3: #00C9A7;
+    --phase-4: #F5A623;
+    --phase-5: #F06292;
+    --phase-6: #66BB6A;
+  }
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text-primary);
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── Header ── */
+  header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(12, 14, 20, 0.85);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 48px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 600;
+    font-size: 15px;
+    letter-spacing: -0.3px;
+    color: var(--text-primary);
+  }
+
+  .logo-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 10px var(--accent);
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.6; transform: scale(0.8); }
+  }
+
+  .header-meta {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+  }
+
+  .badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent);
+    background: var(--accent-glow);
+    border: 1px solid rgba(123, 110, 246, 0.3);
+    padding: 4px 10px;
+    border-radius: 4px;
+  }
+
+  .version {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  /* ── Layout ── */
+  .layout {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    min-height: calc(100vh - 64px);
+    width: 100%;
+  }
+
+  /* ── Sidebar ── */
+  nav {
+    position: sticky;
+    top: 64px;
+    height: calc(100vh - 64px);
+    overflow-y: auto;
+    border-right: 1px solid var(--border);
+    padding: 24px 0;
+    scrollbar-width: none;
+    width: 200px;
+  }
+
+  nav::-webkit-scrollbar { display: none; }
+
+  .nav-section-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    padding: 0 16px;
+    margin-bottom: 8px;
+    margin-top: 20px;
+  }
+
+  .nav-section-label:first-child { margin-top: 0; }
+
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 16px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    text-decoration: none;
+    color: var(--text-secondary);
+    font-size: 12px;
+    font-weight: 400;
+    position: relative;
+  }
+
+  .nav-item::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: transparent;
+    transition: background 0.15s ease;
+  }
+
+  .nav-item:hover {
+    color: var(--text-primary);
+    background: rgba(255,255,255,0.03);
+  }
+
+  .nav-item.active {
+    color: var(--text-primary);
+    background: rgba(255,255,255,0.04);
+  }
+
+  .nav-item.active::before {
+    background: var(--accent);
+  }
+
+  .nav-phase-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  /* ── Main content ── */
+  main {
+    padding: 36px 40px;
+    min-width: 0;
+    width: 100%;
+    box-sizing: border-box;
+    overflow-x: hidden;
+  }
+
+  @media (max-width: 720px) {
+    .layout {
+      grid-template-columns: 1fr;
+    }
+    nav {
+      display: none;
+    }
+    main {
+      padding: 24px 20px;
+    }
+    .phase-body-inner {
+      grid-template-columns: 1fr;
+    }
+    .rules-grid {
+      grid-template-columns: 1fr;
+    }
+    .config-grid {
+      grid-template-columns: 1fr;
+    }
+    .gate-outcomes {
+      grid-template-columns: 1fr;
+    }
+    .audit-flow {
+      grid-template-columns: 1fr 1fr;
+    }
+    .scope-flow {
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+    .scope-arrow {
+      display: none;
+    }
+    .hero h1 {
+      font-size: 28px;
+    }
+    .tools-grid {
+      grid-template-columns: 1fr 1fr;
+    }
+    .model-row {
+      grid-template-columns: 1fr !important;
+      gap: 4px;
+    }
+    .model-row.header {
+      display: none;
+    }
+    .commit-row {
+      grid-template-columns: 1fr !important;
+      gap: 4px;
+    }
+    .commit-row.header {
+      display: none;
+    }
+    .backfill-row {
+      grid-template-columns: 1fr !important;
+      gap: 4px;
+    }
+    .backfill-row.header {
+      display: none;
+    }
+    .override-steps {
+      flex-direction: column;
+    }
+    .override-arrow {
+      display: none;
+    }
+  }
+
+  /* ── Hero ── */
+  .hero {
+    margin-bottom: 64px;
+    width: 100%;
+    max-width: none;
+  }
+
+  .hero-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .hero-eyebrow::before {
+    content: '';
+    display: inline-block;
+    width: 24px;
+    height: 1px;
+    background: var(--accent);
+  }
+
+  .hero h1 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(32px, 4vw, 48px);
+    font-weight: 700;
+    letter-spacing: -1.5px;
+    line-height: 1.1;
+    margin-bottom: 20px;
+  }
+
+  .hero h1 span {
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero-desc {
+    font-size: 16px;
+    line-height: 1.7;
+    color: var(--text-secondary);
+    margin-bottom: 32px;
+  }
+
+  .hero-stats {
+    display: flex;
+    gap: 32px;
+    flex-wrap: wrap;
+    padding-top: 32px;
+    border-top: 1px solid var(--border);
+  }
+
+  .stat {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .stat-value {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    color: var(--text-primary);
+  }
+
+  .stat-label {
+    font-size: 12px;
+    color: var(--text-muted);
+    letter-spacing: 0.02em;
+  }
+
+  /* ── Section titles ── */
+  .section-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* ── Phase cards ── */
+  .phases-container {
+    position: relative;
+    margin-bottom: 64px;
+  }
+
+  .phase-connector {
+    position: absolute;
+    left: 24px;
+    top: 72px;
+    bottom: 40px;
+    width: 1px;
+    background: linear-gradient(to bottom, var(--border-bright), transparent);
+  }
+
+  .phase-card {
+    margin-bottom: 16px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: var(--surface);
+    overflow: hidden;
+    transition: border-color 0.2s ease;
+    position: relative;
+  }
+
+  .phase-card:hover {
+    border-color: var(--border-bright);
+  }
+
+  .phase-card.open {
+    border-color: var(--border-bright);
+  }
+
+  .phase-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 20px 24px;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .phase-number {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-muted);
+    width: 20px;
+    flex-shrink: 0;
+  }
+
+  .phase-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+
+  .phase-info { flex: 1; }
+
+  .phase-name {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: -0.3px;
+    margin-bottom: 3px;
+  }
+
+  .phase-tagline {
+    font-size: 12px;
+    color: var(--text-secondary);
+  }
+
+  .phase-model-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    padding: 4px 10px;
+    border-radius: 100px;
+    border: 1px solid;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+
+  .phase-model-badge::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+  }
+
+  .model-opus {
+    color: #A78BFA;
+    border-color: rgba(167, 139, 250, 0.3);
+    background: rgba(167, 139, 250, 0.08);
+  }
+
+  .model-sonnet {
+    color: #60A5FA;
+    border-color: rgba(96, 165, 250, 0.3);
+    background: rgba(96, 165, 250, 0.08);
+  }
+
+  .model-code {
+    color: #34D399;
+    border-color: rgba(52, 211, 153, 0.3);
+    background: rgba(52, 211, 153, 0.08);
+  }
+
+  .model-fable {
+    color: #F59E0B;
+    border-color: rgba(245, 158, 11, 0.3);
+    background: rgba(245, 158, 11, 0.08);
+  }
+
+  /* ── Tool pills ── */
+  .tool-pill {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    padding: 3px 9px;
+    border-radius: 100px;
+    border: 1px solid;
+  }
+  .tool-pill.chat { color: #60A5FA; border-color: rgba(96,165,250,0.3); background: rgba(96,165,250,0.08); }
+  .tool-pill.cowork { color: #A78BFA; border-color: rgba(167,139,250,0.3); background: rgba(167,139,250,0.08); }
+  .tool-pill.design { color: #F472B6; border-color: rgba(244,114,182,0.3); background: rgba(244,114,182,0.08); }
+  .tool-pill.code { color: #34D399; border-color: rgba(52,211,153,0.3); background: rgba(52,211,153,0.08); }
+
+  /* ── Enforcement ── */
+  .enforce-banner {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    background: rgba(245, 158, 11, 0.06);
+    border: 1px solid rgba(245, 158, 11, 0.25);
+    border-radius: 10px;
+    padding: 18px 20px;
+    margin-bottom: 24px;
+  }
+  .enforce-banner-icon { font-size: 20px; flex-shrink: 0; margin-top: 1px; }
+  .enforce-banner-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: #F5A623;
+    margin-bottom: 5px;
+  }
+  .enforce-banner-desc { font-size: 13px; color: var(--text-secondary); line-height: 1.6; }
+
+  .rules-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+
+  .rule-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 18px;
+    transition: border-color 0.15s;
+  }
+  .rule-card:hover { border-color: var(--border-bright); }
+
+  .rule-number {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    color: var(--accent);
+    background: var(--accent-glow);
+    border: 1px solid rgba(123,110,246,0.25);
+    display: inline-block;
+    padding: 2px 7px;
+    border-radius: 4px;
+    margin-bottom: 10px;
+  }
+
+  .rule-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 7px;
+  }
+
+  .rule-desc { font-size: 12px; color: var(--text-secondary); line-height: 1.65; }
+
+  .code-inline {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    background: var(--elevated);
+    border: 1px solid var(--border-bright);
+    color: var(--accent-2);
+    padding: 2px 7px;
+    border-radius: 4px;
+  }
+
+  /* ── Override flow ── */
+  .override-box {
+    background: var(--surface);
+    border: 1px solid rgba(245, 158, 11, 0.2);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .override-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 18px;
+    background: rgba(245, 158, 11, 0.06);
+    border-bottom: 1px solid rgba(245, 158, 11, 0.15);
+  }
+
+  .override-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #F5A623;
+  }
+
+  .override-steps {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 20px 18px;
+    flex-wrap: wrap;
+  }
+
+  .override-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    flex: 1;
+    min-width: 140px;
+  }
+
+  .override-step-num {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: rgba(245, 158, 11, 0.12);
+    border: 1px solid rgba(245, 158, 11, 0.3);
+    color: #F5A623;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .override-step-text { font-size: 12px; color: var(--text-secondary); line-height: 1.5; }
+  .override-arrow { color: var(--text-muted); font-size: 14px; flex-shrink: 0; }
+
+  /* ── Config section ── */
+  .config-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+
+  .config-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: border-color 0.15s;
+  }
+  .config-card:hover { border-color: var(--border-bright); }
+
+  .config-card-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 18px;
+    background: var(--elevated);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .config-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    background: var(--accent-glow);
+    border: 1px solid rgba(123,110,246,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+
+  .config-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 2px;
+  }
+
+  .config-subtitle { font-size: 11px; color: var(--text-muted); }
+
+  .config-body { padding: 16px 18px; }
+
+  .config-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+  }
+
+  .config-step-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 12.5px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+  }
+
+  .config-step-num {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--elevated);
+    border: 1px solid var(--border-bright);
+    color: var(--text-muted);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  /* ── CLAUDE.md preview ── */
+  .claudemd-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .claudemd-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: var(--elevated);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .claudemd-body {
+    padding: 16px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    line-height: 1.8;
+  }
+
+  .claudemd-section { color: var(--accent-2); font-weight: 500; }
+  .claudemd-line { color: var(--text-muted); padding-left: 16px; margin-bottom: 4px; }
+
+  .phase-chevron {
+    color: var(--text-muted);
+    transition: transform 0.25s ease;
+    flex-shrink: 0;
+  }
+
+  .phase-card.open .phase-chevron {
+    transform: rotate(180deg);
+  }
+
+  /* Phase body */
+  .phase-body {
+    display: none;
+    padding: 0 24px 24px 24px;
+    border-top: 1px solid var(--border);
+    margin-top: 0;
+  }
+
+  .phase-card.open .phase-body {
+    display: block;
+  }
+
+  .phase-body-inner {
+    padding-top: 24px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+
+  .phase-section {
+    background: var(--elevated);
+    border-radius: 8px;
+    padding: 16px 18px;
+    border: 1px solid var(--border);
+  }
+
+  .phase-section.full-width {
+    grid-column: 1 / -1;
+  }
+
+  .phase-section-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .phase-section-title svg {
+    opacity: 0.6;
+  }
+
+  .activity-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .activity-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--text-secondary);
+  }
+
+  .activity-item::before {
+    content: '';
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--border-bright);
+    margin-top: 7px;
+    flex-shrink: 0;
+  }
+
+  .output-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    padding: 6px 12px;
+    border-radius: 6px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+    margin: 4px 4px 4px 0;
+  }
+
+  .criteria-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+  }
+
+  .criteria-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 12.5px;
+    line-height: 1.5;
+    color: var(--text-secondary);
+  }
+
+  .criteria-check {
+    width: 16px;
+    height: 16px;
+    border-radius: 4px;
+    border: 1.5px solid var(--border-bright);
+    flex-shrink: 0;
+    margin-top: 1px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* ── Tools section ── */
+  .tools-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 12px;
+    margin-bottom: 64px;
+  }
+
+  .tool-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    transition: all 0.15s ease;
+  }
+
+  .tool-card:hover {
+    border-color: var(--border-bright);
+    background: var(--elevated);
+  }
+
+  .tool-icon {
+    font-size: 22px;
+    margin-bottom: 10px;
+  }
+
+  .tool-name {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 5px;
+    color: var(--text-primary);
+  }
+
+  .tool-desc {
+    font-size: 12px;
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+
+  .tool-tag {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent);
+    background: var(--accent-glow);
+    border: 1px solid rgba(123, 110, 246, 0.2);
+    padding: 2px 6px;
+    border-radius: 3px;
+    margin-top: 10px;
+  }
+
+  /* ── Model reference ── */
+  .model-table {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 64px;
+  }
+
+  .model-row {
+    display: grid;
+    grid-template-columns: 180px 1fr 1fr;
+    align-items: center;
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+    transition: background 0.1s ease;
+  }
+
+  .model-row:last-child { border-bottom: none; }
+  .model-row:hover { background: rgba(255,255,255,0.02); }
+
+  .model-row.header {
+    background: var(--elevated);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  .model-row.header:hover { background: var(--elevated); }
+
+  .model-name {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 500;
+  }
+
+  .model-use { color: var(--text-secondary); }
+  .model-phases { color: var(--text-muted); font-size: 12px; }
+
+  /* ── Artifact section ── */
+  .artifact-section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 64px;
+  }
+
+  .artifact-header {
+    padding: 20px 24px;
+    background: var(--elevated);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .artifact-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    background: var(--accent-glow);
+    border: 1px solid rgba(123, 110, 246, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+  }
+
+  .artifact-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 2px;
+  }
+
+  .artifact-subtitle {
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  .artifact-sections {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .artifact-section-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    background: var(--elevated);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    font-size: 13px;
+    color: var(--text-secondary);
+  }
+
+  .artifact-section-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--text-muted);
+    width: 20px;
+  }
+
+  .artifact-section-name { flex: 1; }
+
+  .artifact-phase-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 2px 7px;
+    border-radius: 3px;
+    background: var(--bg);
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+  }
+
+  /* ── Footer ── */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 32px 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .footer-text {
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  .footer-text strong {
+    color: var(--text-secondary);
+    font-weight: 500;
+  }
+
+
+  /* ── Section animations ── */
+  section[id] {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+  }
+  section[id].section-visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  /* Immediately visible for getting-started (first section) */
+  section#getting-started {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* ── Phase card smooth expand ── */
+  .phase-body {
+    display: none;
+    padding: 0 24px 24px 24px;
+    border-top: 1px solid var(--border);
+    margin-top: 0;
+    animation: expand-in 0.25s ease;
+  }
+
+  @keyframes expand-in {
+    from { opacity: 0; transform: translateY(-8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── Stat counter ── */
+  .stat-value {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    color: var(--text-primary);
+    transition: color 0.3s ease;
+  }
+
+  /* ── Nav item active indicator ── */
+  .nav-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 7px 16px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    text-decoration: none;
+    color: var(--text-secondary);
+    font-size: 12px;
+    font-weight: 400;
+    position: relative;
+    border-left: 2px solid transparent;
+  }
+
+  /* ── Scrollbar ── */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border-bright); border-radius: 3px; }
+
+  /* ── GitHub section ── */
+  .repo-tree {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 20px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+  }
+
+  .repo-tree-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 16px;
+    background: var(--elevated);
+    border-bottom: 1px solid var(--border);
+    color: var(--text-muted);
+    font-size: 11px;
+  }
+
+  .repo-tree-body { padding: 16px; line-height: 2.2; }
+  .tree-dir { color: #60A5FA; }
+  .tree-file { color: var(--text-secondary); }
+  .tree-file.highlight { color: var(--accent-2); }
+  .tree-comment { color: var(--text-muted); font-size: 11px; }
+  .tree-indent { padding-left: 20px; }
+  .tree-indent-2 { padding-left: 40px; }
+
+  .commit-table {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+
+  .commit-row {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    padding: 11px 16px;
+    border-bottom: 1px solid var(--border);
+    font-size: 12px;
+    align-items: center;
+  }
+  .commit-row:last-child { border-bottom: none; }
+  .commit-row.header {
+    background: var(--elevated);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+  .commit-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--accent-2);
+    background: var(--accent-2-glow);
+    border: 1px solid rgba(0,201,167,0.2);
+    padding: 2px 8px;
+    border-radius: 4px;
+    display: inline-block;
+  }
+  .commit-desc { color: var(--text-secondary); }
+
+  .progress-md {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .progress-md-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: var(--elevated);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .progress-md-body {
+    padding: 16px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    line-height: 1.9;
+    color: var(--text-secondary);
+  }
+
+  .md-h2 { color: #60A5FA; font-weight: 600; }
+  .md-h3 { color: var(--accent); }
+  .md-check { color: var(--accent-2); }
+  .md-pending { color: var(--text-muted); }
+  .md-warn { color: #F5A623; }
+
+  /* ── Guidance section ── */
+  .guidance-flow {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .guidance-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    transition: border-color 0.15s;
+  }
+  .guidance-card:hover { border-color: var(--border-bright); }
+
+  .guidance-card-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 18px;
+    background: var(--elevated);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .guidance-moment {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 3px 9px;
+    border-radius: 4px;
+  }
+
+  .moment-start { color: var(--accent); background: var(--accent-glow); border: 1px solid rgba(123,110,246,0.25); }
+  .moment-during { color: #60A5FA; background: rgba(96,165,250,0.08); border: 1px solid rgba(96,165,250,0.25); }
+  .moment-end { color: var(--accent-2); background: var(--accent-2-glow); border: 1px solid rgba(0,201,167,0.25); }
+
+  .guidance-card-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .guidance-card-body { padding: 16px 18px; }
+
+  .guidance-example {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 6px 6px 0;
+    padding: 12px 14px;
+    font-size: 12px;
+    color: var(--text-secondary);
+    line-height: 1.7;
+    margin-top: 12px;
+    font-style: italic;
+  }
+
+  .guidance-example.end { border-left-color: var(--accent-2); }
+  .guidance-example.during { border-left-color: #60A5FA; }
+
+  /* ── Existing projects ── */
+  .audit-flow {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+
+  .audit-step {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    position: relative;
+    transition: border-color 0.15s;
+  }
+  .audit-step:hover { border-color: var(--border-bright); }
+
+  .audit-step-num {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--border-bright);
+    margin-bottom: 10px;
+  }
+
+  .audit-step-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+  }
+
+  .audit-step-desc {
+    font-size: 12px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+
+  .backfill-table {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+
+  .backfill-row {
+    display: grid;
+    grid-template-columns: 180px 120px 1fr;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    font-size: 12px;
+    align-items: start;
+    gap: 8px;
+  }
+  .backfill-row:last-child { border-bottom: none; }
+  .backfill-row.header {
+    background: var(--elevated);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    align-items: center;
+  }
+
+  .gap-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    display: inline-block;
+    border: 1px solid;
+  }
+  .gap-mandatory { color: #F87171; border-color: rgba(248,113,113,0.3); background: rgba(248,113,113,0.08); }
+  .gap-optional { color: #F5A623; border-color: rgba(245,166,35,0.3); background: rgba(245,166,35,0.08); }
+  .gap-ok { color: var(--accent-2); border-color: rgba(0,201,167,0.3); background: rgba(0,201,167,0.08); }
+
+  /* ── Responsibility badges ── */
+  .resp {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 1px 6px;
+    border-radius: 3px;
+    border: 1px solid;
+    margin-right: 6px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .resp-claude  { color: #7B6EF6; border-color: rgba(123,110,246,0.3); background: rgba(123,110,246,0.08); }
+  .resp-user    { color: #F5A623; border-color: rgba(245,166,35,0.3);  background: rgba(245,166,35,0.08);  }
+  .resp-both    { color: #00C9A7; border-color: rgba(0,201,167,0.3);   background: rgba(0,201,167,0.08);   }
+  .resp-code    { color: #34D399; border-color: rgba(52,211,153,0.3);  background: rgba(52,211,153,0.08);  }
+
+  .activity-item { align-items: flex-start; }
+
+  /* ── Responsibilities section ── */
+  .resp-table {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+
+  .resp-row {
+    display: grid;
+    grid-template-columns: 170px 1fr 1fr;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    font-size: 12px;
+    gap: 12px;
+    align-items: start;
+  }
+  .resp-row:last-child { border-bottom: none; }
+  .resp-row.header {
+    background: var(--elevated);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    align-items: center;
+  }
+  .resp-row:hover:not(.header) { background: rgba(255,255,255,0.015); }
+
+  .resp-phase-label {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-secondary);
+  }
+
+  .resp-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .resp-list li {
+    font-size: 11.5px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+  }
+
+  .resp-list li::before {
+    content: '·';
+    color: var(--text-muted);
+    flex-shrink: 0;
+  }
+
+  .always-user-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 10px;
+    margin-top: 16px;
+  }
+
+  .always-user-card {
+    background: rgba(245,166,35,0.05);
+    border: 1px solid rgba(245,166,35,0.2);
+    border-radius: 8px;
+    padding: 12px 14px;
+    font-size: 12px;
+    color: var(--text-secondary);
+    line-height: 1.5;
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+
+  .always-user-icon {
+    font-size: 14px;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  /* ── Gate card ── */
+  .gate-card {
+    display: flex;
+    gap: 0;
+    margin-bottom: 16px;
+    position: relative;
+  }
+
+  .gate-left {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0 20px;
+    flex-shrink: 0;
+  }
+
+  .gate-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(248,113,113,0.1);
+    border: 2px dashed rgba(248,113,113,0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+    z-index: 1;
+  }
+
+  .gate-line {
+    width: 1px;
+    flex: 1;
+    background: rgba(248,113,113,0.2);
+    margin: 6px 0;
+    min-height: 20px;
+  }
+
+  .gate-body {
+    flex: 1;
+    background: rgba(248,113,113,0.04);
+    border: 1px dashed rgba(248,113,113,0.25);
+    border-radius: 10px;
+    padding: 18px 20px;
+    margin-bottom: 8px;
+  }
+
+  .gate-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #F87171;
+    margin-bottom: 6px;
+  }
+
+  .gate-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+  }
+
+  .gate-desc {
+    font-size: 12.5px;
+    color: var(--text-secondary);
+    line-height: 1.65;
+    margin-bottom: 14px;
+  }
+
+  .gate-outcomes {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  .gate-outcome {
+    padding: 12px 14px;
+    border-radius: 8px;
+    border: 1px solid;
+  }
+
+  .gate-outcome.approve {
+    background: rgba(0,201,167,0.06);
+    border-color: rgba(0,201,167,0.2);
+  }
+
+  .gate-outcome.reject {
+    background: rgba(245,166,35,0.06);
+    border-color: rgba(245,166,35,0.2);
+  }
+
+  .gate-outcome-label {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    margin-bottom: 5px;
+  }
+
+  .gate-outcome.approve .gate-outcome-label { color: var(--accent-2); }
+  .gate-outcome.reject .gate-outcome-label { color: #F5A623; }
+
+  .gate-outcome-desc {
+    font-size: 11.5px;
+    color: var(--text-secondary);
+    line-height: 1.55;
+  }
+
+  /* ── Scope creep ── */
+  .scope-flow {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr auto 1fr auto 1fr;
+    gap: 0;
+    align-items: start;
+    margin-bottom: 8px;
+  }
+
+  .scope-step {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px;
+    transition: border-color 0.15s;
+  }
+  .scope-step:hover { border-color: var(--border-bright); }
+
+  .scope-step-icon { font-size: 22px; margin-bottom: 10px; }
+  .scope-step-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 7px;
+  }
+  .scope-step-desc { font-size: 12px; color: var(--text-secondary); line-height: 1.6; }
+
+  .scope-arrow {
+    color: var(--text-muted);
+    font-size: 18px;
+    padding: 0 8px;
+    margin-top: 20px;
+    flex-shrink: 0;
+  }
+
+  .scope-impact-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .scope-impact-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 11px 16px;
+    background: var(--elevated);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .scope-impact-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  .scope-impact-body { padding: 4px 0; }
+
+  .scope-impact-row {
+    display: grid;
+    grid-template-columns: 180px 1fr;
+    padding: 11px 16px;
+    border-bottom: 1px solid var(--border);
+    gap: 12px;
+    align-items: start;
+    font-size: 12.5px;
+  }
+  .scope-impact-row:last-child { border-bottom: none; }
+  .scope-impact-row.highlight { background: rgba(123,110,246,0.05); }
+
+  .scope-impact-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    padding-top: 2px;
+  }
+
+  .scope-impact-value { color: var(--text-secondary); line-height: 1.6; }
+
+  /* ── Getting Started ── */
+  .gs-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 24px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 0;
+  }
+
+  .gs-tab {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-muted);
+    background: none;
+    border: none;
+    padding: 10px 16px;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    transition: all 0.15s ease;
+  }
+
+  .gs-tab:hover { color: var(--text-secondary); }
+
+  .gs-tab.active {
+    color: var(--text-primary);
+    border-bottom-color: var(--accent);
+  }
+
+  .gs-panel { width: 100%; }
+
+  .gs-step-group {
+    margin-bottom: 32px;
+    width: 100%;
+  }
+
+  .gs-step-group-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 14px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .gs-step-group-title::before {
+    content: '';
+    width: 4px;
+    height: 16px;
+    background: var(--accent);
+    border-radius: 2px;
+    flex-shrink: 0;
+  }
+
+  .gs-checklist {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+  }
+
+  .gs-check-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 13px 16px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    transition: border-color 0.15s;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .gs-check-item:hover { border-color: var(--border-bright); }
+
+  .gs-check-box {
+    font-size: 16px;
+    color: var(--border-bright);
+    flex-shrink: 0;
+    margin-top: 1px;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .gs-check-title {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+  }
+
+  .gs-check-desc {
+    font-size: 12px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+
+  .gs-template {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .gs-template-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: var(--elevated);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .gs-template-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  .gs-template-body {
+    padding: 18px 20px;
+    font-size: 12.5px;
+    line-height: 2;
+    color: var(--text-primary);
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .gs-tmpl-tag {
+    color: var(--accent-2);
+    font-weight: 600;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-dot"></div>
+    Product Development Framework
+  </div>
+  <div class="header-meta">
+    <span class="badge">Internal Playbook</span>
+    <span class="version">v2.2 · 2026</span>
+  </div>
+</header>
+
+<div class="layout">
+
+  <!-- Sidebar Navigation -->
+  <nav>
+    <div class="nav-section-label">Inicio</div>
+    <a class="nav-item active" href="#getting-started">
+      <span>→</span> Getting Started
+    </a>
+    <a class="nav-item" href="#hero">
+      <span>→</span> Introducción
+    </a>
+
+    <div class="nav-section-label">Fases</div>
+    <a class="nav-item" href="#phase-minus1">
+      <span class="nav-phase-dot" style="background:#94A3B8"></span> Calificación
+    </a>
+    <a class="nav-item" href="#phase-1" onclick="openPhase(0)">
+      <span class="nav-phase-dot" style="background:#7B6EF6"></span> Investigación
+    </a>
+    <a class="nav-item" href="#phase-2" onclick="openPhase(1)">
+      <span class="nav-phase-dot" style="background:#5B8EF4"></span> Discovery & Definición
+    </a>
+    <a class="nav-item" href="#phase-3" onclick="openPhase(2)">
+      <span class="nav-phase-dot" style="background:#00C9A7"></span> Análisis de Mercado
+    </a>
+    <a class="nav-item" href="#gate-client">
+      <span class="nav-phase-dot" style="background:#F87171"></span> Gate · Cliente
+    </a>
+    <a class="nav-item" href="#phase-4" onclick="openPhase(3)">
+      <span class="nav-phase-dot" style="background:#F5A623"></span> Planificación Técnica
+    </a>
+    <a class="nav-item" href="#phase-5" onclick="openPhase(4)">
+      <span class="nav-phase-dot" style="background:#E879F9"></span> Diseño / UX
+    </a>
+    <a class="nav-item" href="#phase-6" onclick="openPhase(5)">
+      <span class="nav-phase-dot" style="background:#F06292"></span> MVP
+    </a>
+    <a class="nav-item" href="#phase-7" onclick="openPhase(6)">
+      <span class="nav-phase-dot" style="background:#66BB6A"></span> Desarrollo Completo
+    </a>
+    <a class="nav-item" href="#phase-8" onclick="openPhase(7)">
+      <span class="nav-phase-dot" style="background:#63B3ED"></span> Post-Lanzamiento
+    </a>
+
+    <div class="nav-section-label">Referencia</div>
+    <a class="nav-item" href="#tracks">
+      <span>→</span> Tracks
+    </a>
+    <a class="nav-item" href="#arquetipos">
+      <span>→</span> Arquetipos
+    </a>
+    <a class="nav-item" href="#artifact">
+      <span>→</span> Artifact Central
+    </a>
+    <a class="nav-item" href="#responsabilidades">
+      <span>→</span> Responsabilidades
+    </a>
+    <a class="nav-item" href="#models">
+      <span>→</span> Modelos Claude
+    </a>
+    <a class="nav-item" href="#tools">
+      <span>→</span> Herramientas por fase
+    </a>
+    <a class="nav-item" href="#github">
+      <span>→</span> GitHub & Progreso
+    </a>
+    <a class="nav-item" href="#commercial">
+      <span>→</span> Propuesta Comercial
+    </a>
+
+    <div class="nav-section-label">Reglas</div>
+    <a class="nav-item" href="#enforcement">
+      <span>→</span> Enforcement
+    </a>
+    <a class="nav-item" href="#scope">
+      <span>→</span> Scope Creep
+    </a>
+    <a class="nav-item" href="#testing">
+      <span>→</span> Testing & QA
+    </a>
+
+    <div class="nav-section-label">Setup</div>
+    <a class="nav-item" href="#system-prompt">
+      <span>→</span> Instrucciones Cowork
+    </a>
+    <a class="nav-item" href="#config">
+      <span>→</span> Configuración
+    </a>
+    <a class="nav-item" href="#team">
+      <span>→</span> Coordinación de Equipo
+    </a>
+    <a class="nav-item" href="#guidance">
+      <span>→</span> Guía al Usuario
+    </a>
+
+    <div class="nav-section-label">Casos Especiales</div>
+    <a class="nav-item" href="#existing">
+      <span>→</span> Proyectos Existentes
+    </a>
+  </nav>
+
+
+  <!-- Main Content -->
+  <main>
+
+    <!-- Getting Started -->
+    <section id="getting-started" style="margin-top: 48px; margin-bottom: 64px;">
+      <div class="section-title">Getting Started</div>
+
+      <p style="font-size:13px; color:var(--text-secondary); line-height:1.7; margin-bottom:28px;">
+        Todo lo que el usuario necesita hacer antes de abrir la primera conversación con Claude. Sigue el flujo correspondiente según si el proyecto es nuevo o ya está iniciado.
+      </p>
+
+      <!-- Tab switcher -->
+      <div class="gs-tabs">
+        <button class="gs-tab active" onclick="switchTab(this, 'new')">🆕 Proyecto nuevo</button>
+        <button class="gs-tab" onclick="switchTab(this, 'existing')">🔄 Proyecto existente</button>
+      </div>
+
+      <!-- NEW PROJECT -->
+      <div id="gs-new" class="gs-panel">
+
+        <div class="gs-step-group">
+          <div class="gs-step-group-title">Paso 1 · Crea la carpeta local del proyecto</div>
+          <div class="gs-checklist">
+            <div class="gs-check-item">
+              <span class="gs-check-box">☐</span>
+              <div>
+                <div class="gs-check-title">Crear carpeta con estructura Cliente/Proyecto</div>
+                <div class="gs-check-desc">Crea la carpeta siguiendo la estructura <span class="code-inline">~/Projects/NombreCliente/NombreProyecto</span>. Ejemplo: <span class="code-inline">~/Projects/AcmeCorp/DashboardMVP</span>. Esta separación permite tener varios proyectos del mismo cliente organizados bajo la misma carpeta padre.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="gs-step-group">
+          <div class="gs-step-group-title">Paso 2 · <span class="tool-pill code">Code</span> Clona el template en esa carpeta</div>
+          <div class="gs-checklist">
+            <div class="gs-check-item">
+              <span class="gs-check-box">☐</span>
+              <div>
+                <div class="gs-check-title">Abrir Code apuntando a la carpeta del proyecto</div>
+                <div class="gs-check-desc">Abre la app de Claude → tab Code → selecciona la carpeta creada en el Paso 1. Luego envía este mensaje:</div>
+              </div>
+            </div>
+          </div>
+          <div class="gs-template" style="margin-top:12px;">
+            <div class="gs-template-header">
+              <span class="gs-template-label">Mensaje para Code</span>
+            </div>
+            <div class="gs-template-body">
+              <span class="gs-tmpl-tag">Setup inicial del proyecto</span><br><br>
+              <span style="color:var(--text-muted);">Clona el template del framework en esta carpeta:</span><br>
+              <span style="color:var(--text-muted);">git clone https://github.com/anmelz/product-framework-template .</span><br><br>
+              <span style="color:var(--text-muted);">Luego crea un repositorio en GitHub llamado [nombre-proyecto], conéctalo como origin y haz el push inicial.</span>
+            </div>
+          </div>
+          <p style="font-size:12px; color:var(--text-muted); line-height:1.6; margin-top:12px;">Code clona el template con toda la estructura (<span class="code-inline">.claude/</span>, <span class="code-inline">_context/</span>, <span class="code-inline">docs/</span>) y configura el repo en GitHub. Desde este momento Code ya tiene el contexto del framework automáticamente.</p>
+        </div>
+
+        <div class="gs-step-group">
+          <div class="gs-step-group-title">Paso 3 · <span class="tool-pill cowork">Cowork</span> Crea el proyecto y pega las instrucciones</div>
+          <div class="gs-checklist">
+            <div class="gs-check-item">
+              <span class="gs-check-box">☐</span>
+              <div>
+                <div class="gs-check-title">Cowork → New Project → seleccionar la carpeta del proyecto</div>
+                <div class="gs-check-desc">Crea el proyecto en Cowork apuntando a la carpeta local del repositorio.</div>
+              </div>
+            </div>
+            <div class="gs-check-item">
+              <span class="gs-check-box">☐</span>
+              <div>
+                <div class="gs-check-title">Pegar el contenido de <span class="code-inline">_context/framework.md</span> en las instrucciones del proyecto</div>
+                <div class="gs-check-desc">Al crear el proyecto en Cowork hay una sección de instrucciones — pega ahí el contenido de <span class="code-inline">_context/framework.md</span>. Esto le da a Cowork el contexto del framework para todas las sesiones de este proyecto. Cada miembro del equipo repite este paso al crear su propia copia local del proyecto en Cowork.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="gs-step-group">
+          <div class="gs-step-group-title">Paso 4 · Arranca la Fase 1 en Cowork</div>
+          <p style="font-size:12.5px; color:var(--text-secondary); line-height:1.7; margin-bottom:14px;">Con todo configurado, abre el proyecto en Cowork y envía el contexto inicial del cliente para comenzar la Fase 1 · Investigación.</p>
+          <div class="gs-template">
+            <div class="gs-template-header">
+              <span class="gs-template-label">Plantilla · Primer mensaje en Cowork — Fase 1</span>
+              <span style="color:var(--text-muted); font-size:11px;">Copia, adapta y envía</span>
+            </div>
+            <div class="gs-template-body">
+              <span class="gs-tmpl-tag">Proyecto nuevo · Fase 1 · Investigación</span><br><br>
+              <span style="color:var(--text-muted);">**Cliente / Proyecto:** [nombre]</span><br>
+              <span style="color:var(--text-muted);">**Industria:** [industria]</span><br>
+              <span style="color:var(--text-muted);">**Sitio web:** [url si existe]</span><br>
+              <span style="color:var(--text-muted);">**Repositorio GitHub:** [url creado en Paso 2]</span><br><br>
+              <span style="color:var(--text-muted);">**Contexto e idea:**</span><br>
+              <span style="color:var(--text-muted);">[Todo lo que sabes: el problema, la oportunidad, conversaciones previas. Sin filtro.]</span><br><br>
+              <span style="color:var(--text-muted);">**Competidores o referencias conocidas:** [si los hay]</span><br>
+              <span style="color:var(--text-muted);">**Restricciones:** [budget, timeline, cualquier restricción conocida]</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+
+      <!-- EXISTING PROJECT -->
+      <div id="gs-existing" class="gs-panel" style="display:none;">
+
+        <div class="gs-step-group">
+          <div class="gs-step-group-title">Paso 1 · Crea la carpeta local y clona el repo existente</div>
+          <div class="gs-checklist">
+            <div class="gs-check-item">
+              <span class="gs-check-box">☐</span>
+              <div>
+                <div class="gs-check-title">Crear carpeta con estructura Cliente/Proyecto</div>
+                <div class="gs-check-desc">Crea la carpeta siguiendo la estructura <span class="code-inline">~/Projects/NombreCliente/NombreProyecto</span>. Ejemplo: <span class="code-inline">~/Projects/AcmeCorp/Dashboard</span>. Esta separación permite tener varios proyectos del mismo cliente organizados.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="gs-step-group">
+          <div class="gs-step-group-title">Paso 2 · <span class="tool-pill code">Code</span> Clona el repo existente y agrega la estructura del framework</div>
+          <div class="gs-checklist">
+            <div class="gs-check-item">
+              <span class="gs-check-box">☐</span>
+              <div>
+                <div class="gs-check-title">Abrir Code apuntando a la carpeta del proyecto</div>
+                <div class="gs-check-desc">Abre la app de Claude → tab Code → selecciona la carpeta creada. Luego envía este mensaje:</div>
+              </div>
+            </div>
+          </div>
+          <div class="gs-template" style="margin-top:12px;">
+            <div class="gs-template-header">
+              <span class="gs-template-label">Mensaje para Code — proyecto existente</span>
+            </div>
+            <div class="gs-template-body">
+              <span class="gs-tmpl-tag">Setup framework en proyecto existente</span><br><br>
+              <span style="color:var(--text-muted);">Clona el repositorio existente en esta carpeta:</span><br>
+              <span style="color:var(--text-muted);">git clone [url-repo-existente] .</span><br><br>
+              <span style="color:var(--text-muted);">Luego agrega la estructura del framework que falta del template (https://github.com/anmelz/product-framework-template):</span><br>
+              <span style="color:var(--text-muted);">- .claude/rules/framework-rules.md</span><br>
+              <span style="color:var(--text-muted);">- _context/framework.md</span><br>
+              <span style="color:var(--text-muted);">- PROGRESS.md (si no existe)</span><br>
+              <span style="color:var(--text-muted);">- docs/ y docs/decisions/ (si no existen)</span><br><br>
+              <span style="color:var(--text-muted);">No toques los archivos existentes del proyecto.</span>
+            </div>
+          </div>
+          <p style="font-size:12px; color:var(--text-muted); line-height:1.6; margin-top:12px;">Code agrega solo los archivos del framework que faltan sin tocar el código existente. Desde este momento Code tiene el contexto del framework automáticamente.</p>
+        </div>
+
+        <div class="gs-step-group">
+          <div class="gs-step-group-title">Paso 3 · <span class="tool-pill cowork">Cowork</span> Crea el proyecto y pega las instrucciones</div>
+          <div class="gs-checklist">
+            <div class="gs-check-item">
+              <span class="gs-check-box">☐</span>
+              <div>
+                <div class="gs-check-title">Cowork → New Project → seleccionar la carpeta del proyecto</div>
+                <div class="gs-check-desc">Crea el proyecto en Cowork apuntando a la carpeta local del repositorio.</div>
+              </div>
+            </div>
+            <div class="gs-check-item">
+              <span class="gs-check-box">☐</span>
+              <div>
+                <div class="gs-check-title">Pegar el contenido de <span class="code-inline">_context/framework.md</span> en las instrucciones del proyecto</div>
+                <div class="gs-check-desc">Al crear el proyecto hay una sección de instrucciones — pega ahí el contenido de <span class="code-inline">_context/framework.md</span>. Como Code agregó ese archivo en el Paso 2, ya está disponible en la carpeta del proyecto. Cada miembro del equipo repite este paso en su propia copia local.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="gs-step-group">
+          <div class="gs-step-group-title">Paso 4 · Recopila el contexto existente y arranca la Fase 0 en Cowork</div>
+          <p style="font-size:12.5px; color:var(--text-secondary); line-height:1.7; margin-bottom:14px;">El Project Audit se hace en Cowork. En vez de copiar y pegar contexto en el prompt, adjunta los archivos directamente — Cowork lee <span class="code-inline">.md</span> y <span class="code-inline">.html</span> sin problema. Organiza los archivos antes de empezar.</p>
+          <div class="gs-checklist">
+            <div class="gs-check-item">
+              <span class="gs-check-box">☐</span>
+              <div>
+                <div class="gs-check-title">Recopilar los archivos de contexto</div>
+                <div class="gs-check-desc">Documentación del producto, artifacts anteriores, decisiones técnicas, READMEs, propuestas previas, wireframes exportados — cualquier archivo <span class="code-inline">.md</span> o <span class="code-inline">.html</span> que describa el estado del proyecto. PDFs e imágenes también funcionan.</div>
+              </div>
+            </div>
+          </div>
+          <div class="gs-template" style="margin-top:12px;">
+            <div class="gs-template-header">
+              <span class="gs-template-label">Plantilla · Primer mensaje en Cowork — Fase 0 · Project Audit</span>
+              <span style="color:var(--text-muted); font-size:11px;">Adjunta los archivos + envía este mensaje</span>
+            </div>
+            <div class="gs-template-body">
+              <span class="gs-tmpl-tag">Proyecto existente · Fase 0 · Project Audit</span><br><br>
+              <span style="color:var(--text-muted);">**Cliente / Proyecto:** [nombre]</span><br>
+              <span style="color:var(--text-muted);">**Repositorio GitHub:** [url]</span><br><br>
+              <span style="color:var(--text-muted);">**Archivos adjuntos:**</span><br>
+              <span style="color:var(--text-muted);">- [archivo.md] — [qué contiene]</span><br>
+              <span style="color:var(--text-muted);">- [artifact.html] — [qué contiene]</span><br>
+              <span style="color:var(--text-muted);">- [decisions.md] — [qué contiene]</span><br><br>
+              <span style="color:var(--text-muted);">**Estado actual en una línea:**</span><br>
+              <span style="color:var(--text-muted);">[Ej: MVP en desarrollo, diseño aprobado, sin análisis de mercado formal]</span><br><br>
+              <span style="color:var(--text-muted);">**Problemas o deudas conocidas:**</span><br>
+              <span style="color:var(--text-muted);">[Lo que el equipo sabe que no está bien o necesita revisarse]</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+    <section id="hero" class="hero">
+      <div class="hero-eyebrow">Framework · Versión 1.0</div>
+      <h1>Product<br><span>Development</span><br>Framework</h1>
+      <p class="hero-desc">
+        Proceso estándar para el desarrollo de productos digitales. Define cómo se investiga, planifica, diseña y construye cada proyecto, con soporte de Claude en cada etapa.
+      </p>
+      <div class="hero-stats">
+        <div class="stat">
+          <span class="stat-value">10</span>
+          <span class="stat-label">Fases</span>
+        </div>
+        <div class="stat">
+          <span class="stat-value">3</span>
+          <span class="stat-label">Modelos Claude</span>
+        </div>
+        <div class="stat">
+          <span class="stat-value">1</span>
+          <span class="stat-label">Artifact Central</span>
+        </div>
+        <div class="stat">
+          <span class="stat-value">∞</span>
+          <span class="stat-label">Proyectos</span>
+        </div>
+      </div>
+    </section>
+    <!-- Phases -->
+    <section id="phases">
+      <div class="section-title">Fases del proceso</div>
+      <div class="phases-container">
+
+        <!-- Phase -1: Calificación -->
+        <div class="phase-card" id="phase-minus1">
+          <div class="phase-header" onclick="togglePhase(this)">
+            <span class="phase-number">-1</span>
+            <div class="phase-icon" style="background:rgba(148,163,184,0.12); color:#94A3B8">🎯</div>
+            <div class="phase-info">
+              <div class="phase-name" style="color:#94A3B8">Calificación</div>
+              <div class="phase-tagline">¿Vale la pena invertir en este prospecto? · 30 min máximo</div>
+            </div>
+            <div class="phase-model-badge model-sonnet">claude-sonnet-5</div>
+            <svg class="phase-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="phase-body">
+            <div class="phase-body-inner">
+              <div class="phase-section">
+                <div class="phase-section-title">Actividades</div>
+                <ul class="activity-list">
+                  <li class="activity-item"><span class="resp resp-user">Usuario</span>Contexto rápido del prospecto: quién es, qué quiere, cómo llegó.</li>
+                  <li class="activity-item"><span class="resp resp-claude">Claude</span>Evaluación BANT adaptada: Budget aproximado, Autoridad de decisión, Necesidad real, Timing.</li>
+                  <li class="activity-item"><span class="resp resp-claude">Claude</span>Búsqueda rápida del prospecto: tamaño, industria, señales de capacidad de pago.</li>
+                  <li class="activity-item"><span class="resp resp-claude">Claude</span>Score go/no-go con recomendación de track (Fast o Full).</li>
+                  <li class="activity-item"><span class="resp resp-user">Usuario</span>Decisión final: proceder, descartar, o nutrir para más adelante.</li>
+                </ul>
+              </div>
+              <div class="phase-section">
+                <div class="phase-section-title">Output</div>
+                <div style="margin-bottom: 14px;">
+                  <span class="output-tag">🎯 Score de calificación</span>
+                  <span class="output-tag">🛤️ Track recomendado</span>
+                </div>
+                <p style="font-size:12px; color: var(--text-muted); line-height:1.6">Si es no-go, el prospecto se descarta o se guarda para nutrir más adelante — sin invertir más. Si es go, se define el track y se procede al setup.</p>
+              </div>
+              <div class="phase-section full-width">
+                <div class="phase-section-title">Criterios de calificación — mínimo 3 de 4 para proceder</div>
+                <ul class="criteria-list">
+                  <li class="criteria-item"><span class="criteria-check"></span> Budget: hay indicios de capacidad y disposición de inversión acorde al proyecto</li>
+                  <li class="criteria-item"><span class="criteria-check"></span> Autoridad: el contacto puede decidir o tiene acceso directo a quien decide</li>
+                  <li class="criteria-item"><span class="criteria-check"></span> Necesidad: el problema es real, actual y le cuesta dinero o tiempo al prospecto</li>
+                  <li class="criteria-item"><span class="criteria-check"></span> Timing: hay urgencia o un evento que motiva resolver esto ahora</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Phase 1 -->
+        <div class="phase-card" id="phase-1">
+          <div class="phase-header" onclick="togglePhase(this)">
+            <span class="phase-number">01</span>
+            <div class="phase-icon" style="background:rgba(123,110,246,0.12); color:#7B6EF6">🔍</div>
+            <div class="phase-info">
+              <div class="phase-name" style="color:#7B6EF6">Investigación</div>
+              <div class="phase-tagline">Recopilación de contexto e investigación online profunda</div>
+            </div>
+            <div class="phase-model-badge model-fable">claude-fable-5</div>
+            <svg class="phase-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="phase-body">
+            <div class="phase-body-inner">
+              <div class="phase-section">
+                <div class="phase-section-title">
+                  <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><circle cx="6" cy="6" r="5" stroke="currentColor" stroke-width="1.5" fill="none"/><path d="M6 4v4M4 6h4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                  Actividades
+                </div>
+                <ul class="activity-list">
+                  <li class="activity-item"><span class="resp resp-user">Usuario</span>Dump completo de contexto: idea, cliente, oportunidad, problema, situación.</li>
+                  <li class="activity-item"><span class="resp resp-user">Usuario</span>Configurar herramientas y repositorios del proyecto (GitHub repo, carpeta docs/).</li>
+                  <li class="activity-item"><span class="resp resp-claude">Claude</span>Investigación online profunda sobre el cliente, mercado inicial y competencia — con agentes `investigador` en paralelo (uno por objetivo: competidor, mercado, prospecto).</li>
+                  <li class="activity-item"><span class="resp resp-claude">Claude</span>Crear el artifact inicial y compilar toda la información encontrada.</li>
+                  <li class="activity-item"><span class="resp resp-claude">Claude</span>Generar lista de preguntas y gaps pendientes.</li>
+                </ul>
+              </div>
+              <div class="phase-section">
+                <div class="phase-section-title">
+                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M2 10L10 2M10 2H6M10 2V6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                  Output
+                </div>
+                <div style="margin-bottom: 14px;">
+                  <span class="output-tag">📄 Sección de Investigación en Artifact</span>
+                  <span class="output-tag">❓ Lista de preguntas y gaps pendientes</span>
+                  <span class="output-tag">🛠️ Setup de herramientas completado</span>
+                </div>
+                <p style="font-size:12px; color: var(--text-muted); line-height:1.6">El artifact se crea en esta fase. La lista de gaps guía la siguiente fase de Discovery.</p>
+              </div>
+              <div class="phase-section full-width">
+                <div class="phase-section-title">
+                  <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M10 4L5 9L2 6" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  Criterios de salida
+                </div>
+                <ul class="criteria-list">
+                  <li class="criteria-item"><span class="criteria-check"></span> Contexto inicial completo recibido del usuario</li>
+                  <li class="criteria-item"><span class="criteria-check"></span> Herramientas y repositorios configurados</li>
+                  <li class="criteria-item"><span class="criteria-check"></span> Investigación online completada</li>
+                  <li class="criteria-item"><span class="criteria-check"></span> Lista de preguntas pendientes generada y documentada en el artifact</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Phase 2 -->
+        <div class="phase-card" id="phase-2">
+          <div class="phase-header" onclick="togglePhase(this)">
+            <span class="phase-number">02</span>
+            <div class="phase-icon" style="background:rgba(91,142,244,0.12); color:#5B8EF4">💡</div>
+            <div class="phase-info">
+              <div class="phase-name" style="color:#5B8EF4">Discovery & Definición</div>
+              <div class="phase-tagline">Definición completa del producto y la visión</div>
+            </div>
+            <div class="phase-model-badge model-fable">claude-fable-5</div>
+            <svg class="phase-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="phase-body">
+            <div class="phase-body-inner">
+              <div class="phase-section">
+                <div class="phase-section-title">Actividades</div>
+                <ul class="activity-list">
+                  <li class="activity-item"><span class="resp resp-claude">Claude</span>Revisión y resolución de la lista de preguntas pendientes de la fase anterior.</li>
+                  <li class="activity-item"><span class="resp resp-claude">Claude</span>Preguntas estratégicas adicionales según el contexto del proyecto.</li>
+                  <li class="activity-item"><span class="resp resp-user">Usuario</span>Responder preguntas y agregar contexto libre en cualquier momento.</li>
+                  <li class="activity-item"><span class="resp resp-claude">Claude</span>Sintetizar visión, objetivos, scope y funcionalidades clave.</li>
+                  <li class="activity-item"><span class="resp resp-user">Usuario</span>Aprobar la visión y el scope antes de avanzar.</li>
+                </ul>
+              </div>
+              <div class="phase-section">
+                <div class="phase-section-title">Output</div>
+                <div style="margin-bottom: 14px;">
+                  <span class="output-tag">🎯 Visión del producto</span>
+                  <span class="output-tag">📋 Objetivos y KPIs</span>
+                  <span class="output-tag">📐 Scope definido</span>
+                  <span class="output-tag">⚙️ Funcionalidades clave</span>
+                  <span class="output-tag">🗺️ Estructura general</span>
+                </div>
+                <p style="font-size:12px; color: var(--text-muted); line-height:1.6">El proyecto queda completamente definido "en papel". Todo se documenta en el artifact.</p>
+              </div>
+              <div class="phase-section full-width">
+                <div class="phase-section-title">Criterios de salida</div>
+                <ul class="criteria-list">
+                  <li class="criteria-item"><span class="criteria-check"></span> Todas las preguntas pendientes de investigación resueltas</li>
+                  <li class="criteria-item"><span class="criteria-check"></span> Visión y propósito del producto claramente definidos</li>
+                  <li class="criteria-item"><span class="criteria-check"></span> Scope, funcionalidades y estado final aprobado por el usuario</li>
+                  <li class="criteria-item"><span class="criteria-check"></span> Sección de Discovery completada en el artifact</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Phase 3 -->
+        <div class="phase-card" id="phase-3">
+          <div class="phase-header" onclick="togglePhase(this)">
+            <span class="phase-number">03</span>
+            <div class="phase-icon" style="background:rgba(0,201,167,0.12); color:#00C9A7">📊</div>
+            <div class="phase-info">
+              <div class="phase-name" style="color:#00C9A7">Análisis de Mercado</div>
+              <div class="phase-tagline">Viabilidad, competencia y oportunidad de mercado</div>
+            </div>
+            <div class="phase-model-badge model-fable">claude-fable-5</div>
+            <svg class="phase-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="phase-body">
+            <div class="phase-body-inner">
+              <div class="phase-section">
+                <div class="phase-section-title">Actividades</div>
+                <ul class="activity-list">
+                  <li class="activity-item"><span class="resp resp-claude">Claude</span>Análisis profundo de competencia (directa e indirecta).</li>
+                  <li class="activity-item"><span class="resp resp-claude">Claude</span>Evaluación del tamaño de mercado (TAM/SAM/SOM).</li>
+                  <li class="activity-item"><span class="resp resp-claude">Claude</span>Identificación de tendencias, oportunidades y amenazas.</li>
+                  <li class="activity-item"><span class="resp resp-claude">Claude</span>Análisis de viabilidad del producto.</li>
+                  <li class="activity-item"><span class="resp resp-user">Usuario</span>Complementar con datos propios o conocimiento interno (opcional).</li>
+                  <li class="activity-item"><span class="resp resp-user">Usuario</span>Aprobar el análisis antes de avanzar al Gate.</li>
+                </ul>
+              </div>
+              <div class="phase-section">
+                <div class="phase-section-title">Output</div>
+                <div style="margin-bottom: 14px;">
+                  <span class="output-tag">🏆 Análisis de competidores</span>
+                  <span class="output-tag">📈 Tamaño de mercado</span>
+                  <span class="output-tag">🚀 Oportunidades</span>
+                  <span class="output-tag">⚠️ Riesgos y amenazas</span>
+                  <span class="output-tag">🎯 Posicionamiento</span>
+                </div>
+                <p style="font-size:12px; color: var(--text-muted); line-height:1.6">Documento de análisis de mercado agregado al artifact. Base para la propuesta al cliente.</p>
+              </div>
+              <div class="phase-section full-width">
+                <div class="phase-section-title">Criterios de salida</div>
+                <ul class="criteria-list">
+                  <li class="criteria-item"><span class="criteria-check"></span> Análisis de competencia completado</li>
+                  <li class="criteria-item"><span class="criteria-check"></span> Viabilidad del producto confirmada</li>
+                  <li class="criteria-item"><span class="criteria-check"></span> Estrategia de posicionamiento definida</li>
+                  <li class="criteria-item"><span class="criteria-check"></span> Análisis documentado y aprobado en el artifact</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Client Presentation Gate -->
+        <div class="gate-card" id="gate-client">
+          <div class="gate-left">
+            <div class="gate-icon">🤝</div>
+            <div class="gate-line"></div>
+          </div>
+          <div class="gate-body">
+            <div class="gate-label">Gate · Presentación al Cliente</div>
+            <div class="gate-title">Propuesta + Prototipo — la combinación que cierra</div>
+            <div class="gate-desc"><strong>Prototipo ≠ MVP:</strong> el prototipo es la muestra visual clickeable de cómo se vería el producto (sin funcionalidad real) — herramienta de venta pre-firma. El MVP (Fase 6) sí es funcional. <strong>¿La propuesta lleva prototipo? Claude propone y el usuario confirma:</strong> el default es CON prototipo — un cliente que <em>toca</em> su producto cierra a una tasa dramáticamente mayor, y con IA cuesta horas. La excepción (sin prototipo, justificada): deals muy chicos, prospectos ya decididos, o discovery demasiado débil para anclar el prototipo en la realidad del cliente. El prototipo no tiene tope fijo de pantallas — entre más completo y con datos reales del prospecto, más fuerte. Si crece bastante más allá de lo planeado en Discovery, pasa por Scope Creep antes de seguir.</div>
+            <div class="gate-outcomes">
+              <div class="gate-outcome approve">
+                <div class="gate-outcome-label">✓ Cliente aprueba</div>
+                <div class="gate-outcome-desc">Se avanza a Fase 4 · Planificación Técnica. El feedback del cliente se documenta en el artifact.</div>
+              </div>
+              <div class="gate-outcome reject">
+                <div class="gate-outcome-label">↩ Cliente rechaza o pide cambios</div>
+                <div class="gate-outcome-desc">Se regresa a Fase 2 · Discovery con el feedback documentado. Claude incorpora los cambios y el proceso avanza nuevamente.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Phase 4 -->
+        <div class="phase-card" id="phase-4">
+          <div class="phase-header" onclick="togglePhase(this)">
+            <span class="phase-number">04</span>
+            <div class="phase-icon" style="background:rgba(245,166,35,0.12); color:#F5A623">⚙️</div>
+            <div class="phase-info">
+              <div class="phase-name" style="color:#F5A623">Planificación Técnica</div>
+              <div class="phase-tagline">Arquitectura, stack y roadmap de desarrollo</div>
+            </div>
+            <div class="phase-model-badge model-opus">claude-opus-4-8</div>
+            <svg class="phase-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="phase-body">
+            <div class="phase-body-inner">
+              <div class="phase-section">
+                <div class="phase-section-title">Actividades</div>
+                <ul class="activity-list">
+                  <li class="activity-item"><span class="resp resp-claude">Claude</span>Evaluar todo el contexto acumulado y proponer el stack óptimo.</li>
+                  <li class="activity-item"><span class="resp resp-claude">Claude</span>Diseñar arquitectura del sistema (frontend, backend, DB, infra).</li>
+                  <li class="activity-item"><span class="resp resp-claude">Claude</span>Definir integraciones y servicios necesarios.</li>
+                  <li class="activity-item"><span class="resp resp-claude">Claude</span>Generar estimaciones y el contenido del CLAUDE.md.</li>
+                  <li class="activity-item"><span class="resp resp-user">Usuario</span>Revisar, ajustar y aprobar la propuesta técnica.</li>
+                  <li class="activity-item"><span class="resp resp-both">Ambos</span>Commitear CLAUDE.md al repo (Claude Code si tiene acceso git, usuario si no).</li>
+                </ul>
+              </div>
+              <div class="phase-section">
+                <div class="phase-section-title">Output</div>
+                <div style="margin-bottom: 14px;">
+                  <span class="output-tag">🛠️ Stack tecnológico</span>
+                  <span class="output-tag">🏗️ Arquitectura del sistema</span>
+                  <span class="output-tag">🔌 Integraciones</span>
+                  <span class="output-tag">⏱️ Estimaciones</span>
+                  <span class="output-tag">🗓️ Roadmap técnico</span>
+                </div>
+                <p style="font-size:12px; color: var(--text-muted); line-height:1.6">Propuesta técnica completa. El stack se decide con el panorama completo del proyecto.</p>
+              </div>
+              <div class="phase-section full-width">
+                <div class="phase-section-title">Criterios de salida</div>
+                <ul class="criteria-list">
+                  <li class="criteria-item"><span class="criteria-check"></span> Stack tecnológico definido y aprobado</li>
+                  <li class="criteria-item"><span class="criteria-check"></span> Arquitectura del sistema documentada</li>
+                  <li class="criteria-item"><span class="criteria-check"></span> Estrategia de entornos definida: local / staging / production, con DBs separadas y secrets por entorno (sección "Entornos" del CLAUDE.md)</li>
+                  <li class="criteria-item"><span class="criteria-check"></span> Perfil de seguridad definido: sensibilidad de datos, modelo de auth, superficie de ataque y requisitos del producto (sección "Seguridad" del CLAUDE.md)</li>
+                  <li class="criteria-item"><span class="criteria-check"></span> Estimaciones aceptadas por el equipo y/o cliente</li>
+                  <li class="criteria-item"><span class="criteria-check"></span> Propuesta técnica agregada al artifact</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Phase 5: Design/UX -->
+        <div class="phase-card" id="phase-5">
+          <div class="phase-header" onclick="togglePhase(this)">
+            <span class="phase-number">05</span>
+            <div class="phase-icon" style="background:rgba(232,121,249,0.12); color:#E879F9">🎨</div>
+            <div class="phase-info">
+              <div class="phase-name" style="color:#E879F9">Diseño / UX</div>
+              <div class="phase-tagline">Wireframes, flujos, diseño visual y design system</div>
+            </div>
+            <div class="phase-model-badge model-opus">claude-opus-4-8</div>
+            <svg class="phase-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="phase-body">
+            <div class="phase-body-inner">
+              <div class="phase-section">
+                <div class="phase-section-title">Actividades</div>
+                <ul class="activity-list">
+                  <li class="activity-item"><span class="resp resp-user">Usuario</span>Dar requirements de diseño: preferencias, referencias, restricciones de marca (opcional).</li>
+                  <li class="activity-item"><span class="resp resp-both">Ambos</span>Definir el nivel de interactividad: Claude propone según industria/producto (muy dinámico · moderado · sobrio) con justificación, el usuario confirma. Default del framework: dinámico e interactivo.</li>
+                  <li class="activity-item"><span class="resp resp-claude">Claude</span>Definir flujos de usuario y arquitectura de información.</li>
+                  <li class="activity-item"><span class="resp resp-claude">Claude</span>Crear wireframes de todas las pantallas y componentes.</li>
+                  <li class="activity-item"><span class="resp resp-claude">Claude</span>Diseño visual completo: paleta, tipografía, componentes, estados.</li>
+                  <li class="activity-item"><span class="resp resp-claude">Claude</span>Prototipado interactivo con Claude Design.</li>
+                  <li class="activity-item"><span class="resp resp-user">Usuario</span>Dar feedback, aprobar prototipo y exportar assets desde Claude Design.</li>
+                  <li class="activity-item"><span class="resp resp-both">Ambos</span>Handoff a Code: exportar el output aprobado a <code>docs/design/</code> del repo — prototype/ (pantallas), design-tokens.md, components.md, flows.md.</li>
+                </ul>
+              </div>
+              <div class="phase-section">
+                <div class="phase-section-title">Output</div>
+                <div style="margin-bottom: 14px;">
+                  <span class="output-tag">🗺️ Flujos de usuario</span>
+                  <span class="output-tag">📐 Wireframes completos</span>
+                  <span class="output-tag">🎨 Design system</span>
+                  <span class="output-tag">⚡ Prototipo interactivo</span>
+                  <span class="output-tag">📋 Specs para desarrollo</span>
+                </div>
+                <p style="font-size:12px; color: var(--text-muted); line-height:1.6">El design system y los prototipos se exportan a <code>docs/design/</code> del repo — el input directo que Claude Code lee al arrancar la fase de MVP, para construir sobre lo aprobado en vez de rediseñar.</p>
+              </div>
+              <div class="phase-section full-width">
+                <div class="phase-section-title">Criterios de salida</div>
+                <ul class="criteria-list">
+                  <li class="criteria-item"><span class="criteria-check"></span> Nivel de interactividad propuesto por Claude y confirmado por el usuario</li>
+                  <li class="criteria-item"><span class="criteria-check"></span> Todos los flujos de usuario definidos y aprobados</li>
+                  <li class="criteria-item"><span class="criteria-check"></span> Wireframes de todas las pantallas completados</li>
+                  <li class="criteria-item"><span class="criteria-check"></span> Design system documentado (colores, tipografía, componentes)</li>
+                  <li class="criteria-item"><span class="criteria-check"></span> Prototipo aprobado por el usuario antes de pasar a código</li>
+                  <li class="criteria-item"><span class="criteria-check"></span> Handoff exportado a <code>docs/design/</code>: prototype/, design-tokens.md, components.md, flows.md</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Phase 6: MVP -->
+        <div class="phase-card" id="phase-6">
+          <div class="phase-header" onclick="togglePhase(this)">
+            <span class="phase-number">06</span>
+            <div class="phase-icon" style="background:rgba(240,98,146,0.12); color:#F06292">🚀</div>
+            <div class="phase-info">
+              <div class="phase-name" style="color:#F06292">MVP</div>
+              <div class="phase-tagline">Producto mínimo viable funcional</div>
+            </div>
+            <div class="phase-model-badge model-sonnet">claude-sonnet-5 + Code</div>
+            <svg class="phase-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="phase-body">
+            <div class="phase-body-inner">
+              <div class="phase-section">
+                <div class="phase-section-title">Actividades</div>
+                <ul class="activity-list">
+                  <li class="activity-item"><span class="resp resp-claude">Claude</span>Definir scope mínimo viable (con aprobación del usuario).</li>
+                  <li class="activity-item"><span class="resp resp-code">Code</span>Setup de entornos ANTES de la primera feature: hosting con local / staging / production, DBs separadas por entorno, secrets por entorno, pipeline verificado con un cambio trivial.</li>
+                  <li class="activity-item"><span class="resp resp-code">Code</span>Leer <code>docs/design/</code> (handoff de Fase 5) antes de la primera pantalla: tokens al config de estilos, componentes según inventario, pantallas según prototipo.</li>
+                  <li class="activity-item"><span class="resp resp-code">Code</span>Desarrollo iterativo del MVP construyendo sobre el design system — flujo local → staging. Features independientes en paralelo vía agentes (`implementador`, `tester`); lo compartido (schema, config, layout) serializado.</li>
+                  <li class="activity-item"><span class="resp resp-code">Code</span>Cierre de fase con agentes: `verificador-qa` contrasta los criterios de salida y `revisor-seguridad` (Opus) audita el baseline R9 — ambos reportan antes de aprobar.</li>
+                  <li class="activity-item"><span class="resp resp-code">Code</span>Testing funcional y corrección de errores.</li>
+                  <li class="activity-item"><span class="resp resp-both">Ambos</span>Deploy a ambiente de pruebas (Claude Code si tiene acceso git/deploy, usuario si no).</li>
+                  <li class="activity-item"><span class="resp resp-user">Usuario</span>Validar el MVP, dar feedback y aprobarlo antes de continuar.</li>
+                </ul>
+              </div>
+              <div class="phase-section">
+                <div class="phase-section-title">Output</div>
+                <div style="margin-bottom: 14px;">
+                  <span class="output-tag">💻 MVP funcional deployado</span>
+                  <span class="output-tag">🧪 Resultados de testing</span>
+                  <span class="output-tag">💬 Feedback inicial</span>
+                </div>
+                <p style="font-size:12px; color: var(--text-muted); line-height:1.6">Producto funcional con las features core. Base para validar la propuesta de valor real.</p>
+              </div>
+              <div class="phase-section full-width">
+                <div class="phase-section-title">Criterios de salida</div>
+                <ul class="criteria-list">
+                  <li class="criteria-item"><span class="criteria-check"></span> Entornos configurados y pipeline local → staging → production verificado</li>
+                  <li class="criteria-item"><span class="criteria-check"></span> MVP completado y deployado en staging</li>
+                  <li class="criteria-item"><span class="criteria-check"></span> Testing básico completado sin errores críticos</li>
+                  <li class="criteria-item"><span class="criteria-check"></span> Baseline de seguridad verificado: validación server-side, AuthZ en flujos core, dependencias sin vulnerabilidades críticas</li>
+                  <li class="criteria-item"><span class="criteria-check"></span> Validado y aprobado por el usuario/cliente</li>
+                  <li class="criteria-item"><span class="criteria-check"></span> Feedback documentado para incorporar en desarrollo completo</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Phase 7: Desarrollo Completo -->
+        <div class="phase-card" id="phase-7">
+          <div class="phase-header" onclick="togglePhase(this)">
+            <span class="phase-number">07</span>
+            <div class="phase-icon" style="background:rgba(102,187,106,0.12); color:#66BB6A">✅</div>
+            <div class="phase-info">
+              <div class="phase-name" style="color:#66BB6A">Desarrollo Completo</div>
+              <div class="phase-tagline">Producto final en producción</div>
+            </div>
+            <div class="phase-model-badge model-sonnet">claude-sonnet-5 + Code</div>
+            <svg class="phase-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="phase-body">
+            <div class="phase-body-inner">
+              <div class="phase-section">
+                <div class="phase-section-title">Actividades</div>
+                <ul class="activity-list">
+                  <li class="activity-item"><span class="resp resp-code">Code</span>Desarrollo iterativo de todas las funcionalidades del scope.</li>
+                  <li class="activity-item"><span class="resp resp-code">Code</span>Incorporación del feedback del MVP.</li>
+                  <li class="activity-item"><span class="resp resp-code">Code</span>QA completo en staging: edge cases, performance, seguridad, compatibilidad.</li>
+                  <li class="activity-item"><span class="resp resp-code">Code</span>Optimización de rendimiento.</li>
+                  <li class="activity-item"><span class="resp resp-both">Ambos</span>Deploy a producción — solo tras QA aprobado en staging, con DB y secrets de production propios, migraciones ya verificadas en staging (Claude Code si tiene acceso, usuario si no).</li>
+                  <li class="activity-item"><span class="resp resp-user">Usuario</span>Aprobación final y entrega al cliente.</li>
+                </ul>
+              </div>
+              <div class="phase-section">
+                <div class="phase-section-title">Output</div>
+                <div style="margin-bottom: 14px;">
+                  <span class="output-tag">🏁 Producto completo en producción</span>
+                  <span class="output-tag">📚 Documentación técnica</span>
+                  <span class="output-tag">🔧 Entorno configurado</span>
+                </div>
+                <p style="font-size:12px; color: var(--text-muted); line-height:1.6">Producto finalizado, documentado y entregado al cliente.</p>
+              </div>
+              <div class="phase-section full-width">
+                <div class="phase-section-title">Criterios de salida</div>
+                <ul class="criteria-list">
+                  <li class="criteria-item"><span class="criteria-check"></span> Todas las funcionalidades del scope implementadas</li>
+                  <li class="criteria-item"><span class="criteria-check"></span> QA completado sin errores críticos</li>
+                  <li class="criteria-item"><span class="criteria-check"></span> Revisión de seguridad completa aprobada: checklist del perfil de seguridad, headers, rate limiting, RLS/AuthZ, dependencias sin críticas ni altas</li>
+                  <li class="criteria-item"><span class="criteria-check"></span> Producto deployado en producción</li>
+                  <li class="criteria-item"><span class="criteria-check"></span> Cliente ha aprobado el entregable final</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Phase 8: Post-Lanzamiento -->
+        <div class="phase-card" id="phase-8">
+          <div class="phase-header" onclick="togglePhase(this)">
+            <span class="phase-number">08</span>
+            <div class="phase-icon" style="background:rgba(99,179,237,0.12); color:#63B3ED">🔭</div>
+            <div class="phase-info">
+              <div class="phase-name" style="color:#63B3ED">Post-Lanzamiento</div>
+              <div class="phase-tagline">Monitoreo, mantenimiento e iteración continua</div>
+            </div>
+            <div class="phase-model-badge model-sonnet">claude-sonnet-5</div>
+            <svg class="phase-chevron" width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="phase-body">
+            <div class="phase-body-inner">
+              <div class="phase-section">
+                <div class="phase-section-title">Actividades</div>
+                <ul class="activity-list">
+                  <li class="activity-item"><span class="resp resp-user">Usuario</span>Configurar herramientas de monitoreo (analytics, alertas, uptime).</li>
+                  <li class="activity-item"><span class="resp resp-claude">Claude</span>Analizar métricas y feedback de usuarios.</li>
+                  <li class="activity-item"><span class="resp resp-code">Code</span>Bug fixes, parches de seguridad y mantenimiento correctivo — siempre por el ciclo local → staging → production.</li>
+                  <li class="activity-item"><span class="resp resp-both">Ambos</span>Cumplir el soporte pactado en el SOW: alcance, tiempos de respuesta y duración firmados. Trabajo fuera de ese alcance = nueva propuesta o scope change.</li>
+                  <li class="activity-item"><span class="resp resp-both">Ambos</span>Evaluar si una iteración mayor amerita reiniciar el framework desde Discovery.</li>
+                  <li class="activity-item"><span class="resp resp-user">Usuario</span>Tomar la decisión final sobre iteraciones y roadmap.</li>
+                </ul>
+              </div>
+              <div class="phase-section">
+                <div class="phase-section-title">Output</div>
+                <div style="margin-bottom: 14px;">
+                  <span class="output-tag">📊 Reportes de métricas</span>
+                  <span class="output-tag">🐛 Bugs resueltos</span>
+                  <span class="output-tag">💬 Feedback de usuarios</span>
+                  <span class="output-tag">🔄 Decisión de iteración</span>
+                </div>
+                <p style="font-size:12px; color: var(--text-muted); line-height:1.6">Si una iteración es suficientemente grande, puede reiniciar el framework completo desde Fase 2 · Discovery con el contexto acumulado.</p>
+              </div>
+              <div class="phase-section full-width">
+                <div class="phase-section-title">Criterios para reiniciar el framework</div>
+                <ul class="criteria-list">
+                  <li class="criteria-item"><span class="criteria-check"></span> La iteración propuesta afecta la propuesta de valor o el modelo de negocio</li>
+                  <li class="criteria-item"><span class="criteria-check"></span> Requiere cambios estructurales en arquitectura o stack</li>
+                  <li class="criteria-item"><span class="criteria-check"></span> Impacta más del 30% de las funcionalidades existentes</li>
+                  <li class="criteria-item"><span class="criteria-check"></span> Implica un nuevo análisis de mercado o reposicionamiento</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Tracks -->
+    <section id="tracks" style="margin-top: 48px;">
+      <div class="section-title">Tracks — velocidad según el deal</div>
+
+      <p style="font-size:13px; color:var(--text-secondary); line-height:1.7; margin-bottom:24px;">
+        La velocidad al Gate importa: los prospectos se enfrían. La Fase -1 determina qué track aplicar según el tamaño y complejidad del deal. Ambos tracks producen propuesta + demo — la diferencia es la profundidad.
+      </p>
+
+      <div class="config-grid">
+        <div class="config-card">
+          <div class="config-card-header">
+            <div class="config-icon">⚡</div>
+            <div>
+              <div class="config-title">Fast Track</div>
+              <div class="config-subtitle">Deals pequeños/medianos · Propuesta en 24–48h</div>
+            </div>
+          </div>
+          <div class="config-body">
+            <div class="config-steps">
+              <div class="config-step-item"><span class="config-step-num">1</span> Fases 1–3 comprimidas en una sola sesión intensiva de Cowork</div>
+              <div class="config-step-item"><span class="config-step-num">2</span> Investigación enfocada: solo el prospecto y 2–3 competidores directos</div>
+              <div class="config-step-item"><span class="config-step-num">3</span> Discovery basado en arquetipo — solo se pregunta lo que difiere del patrón</div>
+              <div class="config-step-item"><span class="config-step-num">4</span> Demo construido con IA en horas, con branding del prospecto</div>
+              <div class="config-step-item"><span class="config-step-num">5</span> Gate en 24–48 horas desde el primer contexto</div>
+            </div>
+          </div>
+        </div>
+        <div class="config-card">
+          <div class="config-card-header">
+            <div class="config-icon">🔬</div>
+            <div>
+              <div class="config-title">Full Track</div>
+              <div class="config-subtitle">Deals grandes o complejos · Proceso completo</div>
+            </div>
+          </div>
+          <div class="config-body">
+            <div class="config-steps">
+              <div class="config-step-item"><span class="config-step-num">1</span> Fases 1, 2 y 3 completas como sesiones separadas</div>
+              <div class="config-step-item"><span class="config-step-num">2</span> Investigación profunda: mercado completo, TAM/SAM/SOM con fuentes</div>
+              <div class="config-step-item"><span class="config-step-num">3</span> Discovery exhaustivo con múltiples iteraciones</div>
+              <div class="config-step-item"><span class="config-step-num">4</span> Demo más elaborado: flujo completo del caso de uso principal</div>
+              <div class="config-step-item"><span class="config-step-num">5</span> Aplica cuando el deal justifica la inversión de profundidad</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Arquetipos -->
+    <section id="arquetipos" style="margin-top: 48px;">
+      <div class="section-title">Arquetipos de proyecto — la verdadera productización</div>
+
+      <p style="font-size:13px; color:var(--text-secondary); line-height:1.7; margin-bottom:24px;">
+        La mayoría de los proyectos encajan en patrones repetibles. Cada arquetipo tiene stack pre-decidido — la Fase 4 se vuelve más rápida y las estimaciones mejoran con cada proyecto entregado. A futuro, un <strong>starter kit repo</strong> (auth, layout base, dashboard shell, pagos, deploy config) podría hacer que cada MVP arranque mucho más cerca del final en vez de 0% — pendiente de construir una vez haya suficientes proyectos reales para basarlo en patrones concretos, no en suposiciones.
+      </p>
+
+      <div class="model-table">
+        <div class="model-row header" style="grid-template-columns: 170px 1fr 1fr 110px;">
+          <span>Arquetipo</span>
+          <span>Incluye</span>
+          <span>Stack base</span>
+          <span>Estimación</span>
+        </div>
+        <div class="model-row" style="grid-template-columns: 170px 1fr 1fr 110px;">
+          <span style="color:var(--text-primary); font-weight:600; font-size:13px;">SaaS MVP</span>
+          <span style="color:var(--text-secondary); font-size:12px;">Web app con auth, dashboard, billing, landing de marketing</span>
+          <span style="color:var(--text-secondary); font-size:12px;">Next.js + Tailwind + Postgres + Stripe + Vercel</span>
+          <span style="color:var(--text-muted); font-size:12px;">[calibrar]</span>
+        </div>
+        <div class="model-row" style="grid-template-columns: 170px 1fr 1fr 110px;">
+          <span style="color:var(--text-primary); font-weight:600; font-size:13px;">Marketing + Producto</span>
+          <span style="color:var(--text-secondary); font-size:12px;">Sitio de marketing + web app de producto + backend compartido</span>
+          <span style="color:var(--text-secondary); font-size:12px;">Next.js + Tailwind + Postgres + Vercel</span>
+          <span style="color:var(--text-muted); font-size:12px;">[calibrar]</span>
+        </div>
+        <div class="model-row" style="grid-template-columns: 170px 1fr 1fr 110px;">
+          <span style="color:var(--text-primary); font-weight:600; font-size:13px;">Plataforma interna</span>
+          <span style="color:var(--text-secondary); font-size:12px;">Herramienta interna: dashboards, gestión de datos, reportes, roles</span>
+          <span style="color:var(--text-secondary); font-size:12px;">Next.js + Tailwind + Postgres + auth SSO</span>
+          <span style="color:var(--text-muted); font-size:12px;">[calibrar]</span>
+        </div>
+        <div class="model-row" style="grid-template-columns: 170px 1fr 1fr 110px;">
+          <span style="color:var(--text-primary); font-weight:600; font-size:13px;">App móvil + backend</span>
+          <span style="color:var(--text-secondary); font-size:12px;">App nativa/híbrida con API, auth y panel de administración</span>
+          <span style="color:var(--text-secondary); font-size:12px;">React Native / Expo + API + Postgres</span>
+          <span style="color:var(--text-muted); font-size:12px;">[calibrar]</span>
+        </div>
+        <div class="model-row" style="grid-template-columns: 170px 1fr 1fr 110px;">
+          <span style="color:var(--text-primary); font-weight:600; font-size:13px;">Custom</span>
+          <span style="color:var(--text-secondary); font-size:12px;">No encaja en ningún patrón — proceso completo de Fase 4</span>
+          <span style="color:var(--text-secondary); font-size:12px;">Se define en Planificación Técnica</span>
+          <span style="color:var(--text-muted); font-size:12px;">Por proyecto</span>
+        </div>
+      </div>
+
+      <div class="enforce-banner" style="border-color: rgba(0,201,167,0.25); background: rgba(0,201,167,0.05); margin-top:16px;">
+        <div class="enforce-banner-icon">📈</div>
+        <div>
+          <div class="enforce-banner-title" style="color:var(--accent-2);">Calibración pendiente</div>
+          <div class="enforce-banner-desc">Las estimaciones por arquetipo siguen sin calibrar ([calibrar]) — todavía no se ha cerrado ningún proyecto completo por el framework. Se completan a partir de datos reales una vez haya proyectos entregados de cada arquetipo, no de intuición.</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="artifact">
+      <div class="section-title">Artifact Central</div>
+      <div class="artifact-section">
+        <div class="artifact-header">
+          <div class="artifact-icon">📋</div>
+          <div>
+            <div class="artifact-title">Project Artifact — Documento Vivo</div>
+            <div class="artifact-subtitle">Se crea en Fase 1 y crece con cada fase. Es la fuente de verdad del proyecto.</div>
+          </div>
+        </div>
+        <div class="artifact-sections">
+          <div class="artifact-section-item">
+            <span class="artifact-section-num">01</span>
+            <span class="artifact-section-name">Contexto e Investigación</span>
+            <span class="artifact-phase-tag">Fase 1</span>
+          </div>
+          <div class="artifact-section-item">
+            <span class="artifact-section-num">02</span>
+            <span class="artifact-section-name">Preguntas y Gaps Pendientes</span>
+            <span class="artifact-phase-tag">Fase 1</span>
+          </div>
+          <div class="artifact-section-item">
+            <span class="artifact-section-num">03</span>
+            <span class="artifact-section-name">Visión, Objetivos y Scope del Producto</span>
+            <span class="artifact-phase-tag">Fase 2</span>
+          </div>
+          <div class="artifact-section-item">
+            <span class="artifact-section-num">04</span>
+            <span class="artifact-section-name">Funcionalidades y Estructura</span>
+            <span class="artifact-phase-tag">Fase 2</span>
+          </div>
+          <div class="artifact-section-item">
+            <span class="artifact-section-num">05</span>
+            <span class="artifact-section-name">Análisis de Mercado y Competencia</span>
+            <span class="artifact-phase-tag">Fase 3</span>
+          </div>
+          <div class="artifact-section-item">
+            <span class="artifact-section-num">06</span>
+            <span class="artifact-section-name">Propuesta Técnica y Arquitectura</span>
+            <span class="artifact-phase-tag">Fase 4</span>
+          </div>
+          <div class="artifact-section-item">
+            <span class="artifact-section-num">07</span>
+            <span class="artifact-section-name">Flujos de Usuario, Wireframes y Design System</span>
+            <span class="artifact-phase-tag">Fase 5</span>
+          </div>
+          <div class="artifact-section-item">
+            <span class="artifact-section-num">08</span>
+            <span class="artifact-section-name">Propuesta para el Cliente + Teaser Demo ✦</span>
+            <span class="artifact-phase-tag">Todas</span>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- Responsibilities -->
+    <section id="responsabilidades" style="margin-top: 48px;">
+      <div class="section-title">Responsabilidades por fase</div>
+
+      <div style="display:flex; gap:16px; margin-bottom:20px; flex-wrap:wrap;">
+        <div style="display:flex; align-items:center; gap:8px; font-size:12px; color:var(--text-secondary)"><span class="resp resp-claude">Claude</span> Lo hace Claude automáticamente</div>
+        <div style="display:flex; align-items:center; gap:8px; font-size:12px; color:var(--text-secondary)"><span class="resp resp-user">Usuario</span> Requiere acción del usuario</div>
+        <div style="display:flex; align-items:center; gap:8px; font-size:12px; color:var(--text-secondary)"><span class="resp resp-code">Code</span> Claude Code (requiere acceso git)</div>
+        <div style="display:flex; align-items:center; gap:8px; font-size:12px; color:var(--text-secondary)"><span class="resp resp-both">Ambos</span> Depende del contexto</div>
+      </div>
+
+      <div class="resp-table">
+        <div class="resp-row header">
+          <span>Fase</span>
+          <span>Claude hace</span>
+          <span>Usuario hace</span>
+        </div>
+        <div class="resp-row">
+          <span class="resp-phase-label">Pre-setup</span>
+          <ul class="resp-list"><li>Nada — aún no hay contexto</li></ul>
+          <ul class="resp-list">
+            <li>Crear Claude Project y pegar system prompt</li>
+            <li>Crear repo GitHub con estructura base</li>
+            <li>Invitar equipo a Project y repo</li>
+          </ul>
+        </div>
+        <div class="resp-row">
+          <span class="resp-phase-label">1 · Investigación</span>
+          <ul class="resp-list">
+            <li>Investigación online profunda</li>
+            <li>Crear artifact inicial</li>
+            <li>Generar lista de gaps pendientes</li>
+          </ul>
+          <ul class="resp-list">
+            <li>Proveer contexto inicial (dump)</li>
+            <li>Configurar herramientas recomendadas</li>
+          </ul>
+        </div>
+        <div class="resp-row">
+          <span class="resp-phase-label">2 · Discovery</span>
+          <ul class="resp-list">
+            <li>Hacer preguntas estratégicas</li>
+            <li>Sintetizar visión y scope</li>
+            <li>Actualizar artifact</li>
+          </ul>
+          <ul class="resp-list">
+            <li>Responder preguntas</li>
+            <li>Agregar contexto libre</li>
+            <li>Aprobar visión y scope</li>
+          </ul>
+        </div>
+        <div class="resp-row">
+          <span class="resp-phase-label">3 · Mercado</span>
+          <ul class="resp-list">
+            <li>Investigación y análisis completo</li>
+            <li>Redactar sección en artifact</li>
+          </ul>
+          <ul class="resp-list">
+            <li>Agregar datos propios (opcional)</li>
+            <li>Aprobar análisis</li>
+          </ul>
+        </div>
+        <div class="resp-row">
+          <span class="resp-phase-label">Gate · Cliente</span>
+          <ul class="resp-list">
+            <li>Redactar propuesta completa</li>
+          </ul>
+          <ul class="resp-list">
+            <li>Presentar al cliente</li>
+            <li>Obtener aprobación/rechazo</li>
+            <li>Reportar resultado</li>
+          </ul>
+        </div>
+        <div class="resp-row">
+          <span class="resp-phase-label">4 · Plan. Técnica</span>
+          <ul class="resp-list">
+            <li>Proponer stack y arquitectura</li>
+            <li>Generar CLAUDE.md</li>
+            <li>Estimar esfuerzo</li>
+          </ul>
+          <ul class="resp-list">
+            <li>Aprobar decisiones técnicas</li>
+            <li>Commitear CLAUDE.md si Claude Code no tiene acceso</li>
+          </ul>
+        </div>
+        <div class="resp-row">
+          <span class="resp-phase-label">5 · Diseño/UX</span>
+          <ul class="resp-list">
+            <li>Flujos, wireframes, diseño visual</li>
+            <li>Prototipo interactivo</li>
+          </ul>
+          <ul class="resp-list">
+            <li>Dar requirements (opcional)</li>
+            <li>Dar feedback e iterar</li>
+            <li>Aprobar y exportar assets</li>
+          </ul>
+        </div>
+        <div class="resp-row">
+          <span class="resp-phase-label">6 · MVP</span>
+          <ul class="resp-list">
+            <li>Todo el código (Claude Code)</li>
+            <li>Testing y corrección</li>
+            <li>Deploy a staging (si tiene acceso)</li>
+          </ul>
+          <ul class="resp-list">
+            <li>Validar MVP</li>
+            <li>Dar feedback</li>
+            <li>Aprobar antes de continuar</li>
+          </ul>
+        </div>
+        <div class="resp-row">
+          <span class="resp-phase-label">7 · Dev. Completo</span>
+          <ul class="resp-list">
+            <li>Implementación completa (Claude Code)</li>
+            <li>QA integral</li>
+            <li>Deploy a producción (si tiene acceso)</li>
+          </ul>
+          <ul class="resp-list">
+            <li>Deploy a producción si Claude Code no tiene acceso</li>
+            <li>Aprobación final</li>
+          </ul>
+        </div>
+        <div class="resp-row">
+          <span class="resp-phase-label">8 · Post-launch</span>
+          <ul class="resp-list">
+            <li>Análisis de métricas y feedback</li>
+            <li>Bug fixes (Claude Code)</li>
+          </ul>
+          <ul class="resp-list">
+            <li>Configurar herramientas de monitoreo</li>
+            <li>Decisiones de roadmap</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Always user -->
+      <div style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-muted); margin-bottom:12px;">Siempre requiere el usuario — sin excepción</div>
+      <div class="always-user-grid">
+        <div class="always-user-card"><div class="always-user-icon">🔐</div><div>Confirmar overrides y scope changes con la frase exacta</div></div>
+        <div class="always-user-card"><div class="always-user-icon">🤝</div><div>Contacto directo con el cliente y negociaciones</div></div>
+        <div class="always-user-card"><div class="always-user-icon">💳</div><div>Pagos, contratos y cuentas externas (Vercel, DB, dominios)</div></div>
+        <div class="always-user-card"><div class="always-user-icon">✅</div><div>Aprobación de cierre de cada fase</div></div>
+        <div class="always-user-card"><div class="always-user-icon">🔑</div><div>Credenciales, secrets y datos sensibles</div></div>
+        <div class="always-user-card"><div class="always-user-icon">📊</div><div>Decisiones de negocio finales y prioridades de roadmap</div></div>
+      </div>
+
+    </section>
+
+    <!-- Models Reference -->
+    <section id="models" style="margin-top: 48px;">
+      <div class="section-title">Modelos recomendados por fase</div>
+
+      <p style="font-size:13px; color:var(--text-secondary); line-height:1.7; margin-bottom:24px;">
+        Claude no puede cambiar el modelo por sí mismo — lo selecciona el usuario en la app. Por eso el framework exige que <strong>en cada Status Check y en cada cierre de fase ("¿Qué sigue?") Claude indique el modelo recomendado del siguiente paso</strong>, y avise explícitamente si hay que cambiarlo en el selector. Disponibles de menor a mayor capacidad: Haiku 4.5 · Sonnet 5 · Opus 4.8 · Fable 5 — con libertad de subir para una tarea puntual compleja o bajar a Haiku para lo trivial, volviendo luego al recomendado.
+      </p>
+      <div class="model-table">
+        <div class="model-row header">
+          <span>Modelo</span>
+          <span>Cuándo usarlo</span>
+          <span>Fases</span>
+        </div>
+        <div class="model-row">
+          <span class="model-name" style="color:#F59E0B">claude-fable-5</span>
+          <span class="model-use">Tareas abiertas y sin estructura predefinida que requieren el máximo nivel de razonamiento: investigación profunda sin límites claros, discovery desde cero, análisis de mercado exhaustivo con múltiples fuentes. Ideal para sesiones largas y complejas.</span>
+          <span class="model-phases">Fase 1 (research), 2, 3</span>
+        </div>
+        <div class="model-row">
+          <span class="model-name" style="color:#A78BFA">claude-opus-4-8</span>
+          <span class="model-use">Tareas complejas pero acotadas y con requisitos definidos: planificación técnica con requirements claros, diseño UX estructurado, agentes de código de varias horas. Mejor costo-beneficio que Fable cuando el scope está claro.</span>
+          <span class="model-phases">Fase 4, 5</span>
+        </div>
+        <div class="model-row">
+          <span class="model-name" style="color:#60A5FA">claude-sonnet-5</span>
+          <span class="model-use">Desarrollo iterativo, tareas intermedias con Claude Code, velocidad y costo optimizados para producción. Balance ideal entre capacidad y eficiencia.</span>
+          <span class="model-phases">Fase 6, 7</span>
+        </div>
+        <div class="model-row">
+          <span class="model-name" style="color:#34D399">claude-code</span>
+          <span class="model-use">Implementación técnica, generación de código, debugging, refactoring y sesiones autónomas de desarrollo. Usado en conjunto con Sonnet 5.</span>
+          <span class="model-phases">Fase 6, 7</span>
+        </div>
+      </div>
+    </section>
+    <!-- Tools Stack -->
+    <section id="tools" style="margin-top: 48px;">
+      <div class="section-title">Herramientas por fase</div>
+
+      <!-- Phase-tool matrix -->
+      <div class="model-table" style="margin-bottom: 24px;">
+        <div class="model-row header" style="grid-template-columns: 180px 120px 1fr;">
+          <span>Fase</span>
+          <span>Herramienta</span>
+          <span>Motivo</span>
+        </div>
+        <div class="model-row" style="grid-template-columns: 180px 120px 1fr;">
+          <span style="color:var(--text-secondary); font-size:13px;">1 · Investigación</span>
+          <span><span class="tool-pill cowork">Cowork</span></span>
+          <span style="color:var(--text-secondary); font-size:12px;">Múltiples tool calls en serie: búsqueda online, compilación y creación del artifact.</span>
+        </div>
+        <div class="model-row" style="grid-template-columns: 180px 120px 1fr;">
+          <span style="color:var(--text-secondary); font-size:13px;">2 · Discovery</span>
+          <span><span class="tool-pill cowork">Cowork</span></span>
+          <span style="color:var(--text-secondary); font-size:12px;">Sesión interactiva en Cowork para definir visión, scope y funcionalidades. Claude hace preguntas estratégicas, el usuario responde.</span>
+        </div>
+        <div class="model-row" style="grid-template-columns: 180px 120px 1fr;">
+          <span style="color:var(--text-secondary); font-size:13px;">3 · Análisis Mercado</span>
+          <span><span class="tool-pill cowork">Cowork</span></span>
+          <span style="color:var(--text-secondary); font-size:12px;">Investigación profunda con múltiples fuentes, análisis extenso y redacción del documento.</span>
+        </div>
+        <div class="model-row" style="grid-template-columns: 180px 120px 1fr;">
+          <span style="color:var(--text-secondary); font-size:13px;">4 · Plan. Técnica</span>
+          <span><span class="tool-pill cowork">Cowork</span></span>
+          <span style="color:var(--text-secondary); font-size:12px;">Decisiones de stack y arquitectura en Cowork. Claude propone, el usuario revisa y aprueba.</span>
+        </div>
+        <div class="model-row" style="grid-template-columns: 180px 120px 1fr;">
+          <span style="color:var(--text-secondary); font-size:13px;">5 · Diseño / UX</span>
+          <span><span class="tool-pill design">Design</span></span>
+          <span style="color:var(--text-secondary); font-size:12px;">Claude Design para wireframes, diseño visual y prototipos interactivos.</span>
+        </div>
+        <div class="model-row" style="grid-template-columns: 180px 120px 1fr;">
+          <span style="color:var(--text-secondary); font-size:13px;">6 · MVP</span>
+          <span><span class="tool-pill code">Code</span></span>
+          <span style="color:var(--text-secondary); font-size:12px;">Claude Code implementa el design system en código. Sesiones autónomas de desarrollo.</span>
+        </div>
+        <div class="model-row" style="grid-template-columns: 180px 120px 1fr;">
+          <span style="color:var(--text-secondary); font-size:13px;">7 · Des. Completo</span>
+          <span><span class="tool-pill code">Code</span></span>
+          <span style="color:var(--text-secondary); font-size:12px;">Claude Code para desarrollo completo, QA y deployment a producción.</span>
+        </div>
+      </div>
+
+      <!-- Tool cards -->
+      <div class="tools-grid">
+        <div class="tool-card">
+          <div class="tool-icon">🔄</div>
+          <div class="tool-name">Claude Cowork</div>
+          <div class="tool-desc">Herramienta principal del framework. Investigación, discovery, planificación técnica, análisis y post-lanzamiento. Fases 1, 2, 3, 4 y 8.</div>
+          <div class="tool-tag">Principal</div>
+        </div>
+        <div class="tool-card">
+          <div class="tool-icon">🎨</div>
+          <div class="tool-name">Claude Design</div>
+          <div class="tool-desc">Wireframes, diseño visual, design system y prototipos interactivos. Fase 5.</div>
+          <div class="tool-tag">Diseño</div>
+        </div>
+        <div class="tool-card">
+          <div class="tool-icon">⌨️</div>
+          <div class="tool-name">Claude Code</div>
+          <div class="tool-desc">Implementación técnica, generación de código, debugging y deployment. Fases 6 y 7.</div>
+          <div class="tool-tag">Desarrollo</div>
+        </div>
+        <div class="tool-card">
+          <div class="tool-icon">🐙</div>
+          <div class="tool-name">GitHub</div>
+          <div class="tool-desc">Control de versiones. Contiene el CLAUDE.md del proyecto generado en Fase 4.</div>
+          <div class="tool-tag">Estándar</div>
+        </div>
+        <div class="tool-card">
+          <div class="tool-icon">📊</div>
+          <div class="tool-name">Dashboard Global</div>
+          <div class="tool-desc">Vista holística de todos los proyectos y su progreso. Herramienta por definir.</div>
+          <div class="tool-tag">Por definir</div>
+        </div>
+      </div>
+    </section>
+    <!-- GitHub & Progress -->
+    <section id="github" style="margin-top: 48px;">
+      <div class="section-title">GitHub & Registro de progreso</div>
+
+      <p style="font-size:13px; color:var(--text-secondary); line-height:1.7; margin-bottom:24px;">
+        Todo el trabajo del framework queda registrado en GitHub. Cada proyecto tiene su propio repositorio con una estructura estándar. Claude genera y actualiza los archivos de progreso automáticamente al cerrar cada fase o paso relevante.
+      </p>
+
+      <!-- Repo structure -->
+      <div style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-muted); margin-bottom:10px;">Estructura estándar del repositorio</div>
+      <div class="repo-tree">
+        <div class="repo-tree-header">
+          🐙 <span>nombre-proyecto/</span>
+        </div>
+        <div class="repo-tree-body">
+          <div class="tree-file highlight">CLAUDE.md <span class="tree-comment">← contexto técnico para Claude Code · generado en Fase 4</span></div>
+          <div class="tree-file highlight">PROGRESS.md <span class="tree-comment">← estado actual del framework · actualizado por Claude en cada sesión</span></div>
+          <div class="tree-file">.gitignore</div>
+          <div class="tree-dir">.claude/ <span class="tree-comment">← leído automáticamente por Claude Code</span></div>
+          <div class="tree-indent">
+            <div class="tree-file">settings.json <span class="tree-comment">← permisos de Claude Code</span></div>
+            <div class="tree-dir">rules/</div>
+            <div class="tree-indent">
+              <div class="tree-file highlight">framework-rules.md <span class="tree-comment">← reglas del framework para Code</span></div>
+            </div>
+          </div>
+          <div class="tree-dir">_context/ <span class="tree-comment">← leído automáticamente por Cowork</span></div>
+          <div class="tree-indent">
+            <div class="tree-file highlight">framework.md <span class="tree-comment">← reglas del framework para Cowork</span></div>
+          </div>
+          <div class="tree-dir">docs/</div>
+          <div class="tree-indent">
+            <div class="tree-file highlight">artifact.html <span class="tree-comment">← documento vivo del proyecto</span></div>
+            <div class="tree-dir">decisions/ <span class="tree-comment">← log de decisiones y overrides</span></div>
+          </div>
+          <div class="tree-dir">src/ <span class="tree-comment">← código del producto · generado en Fase 6+</span></div>
+        </div>
+      </div>
+
+      <!-- Commit conventions -->
+      <div style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-muted); margin-bottom:10px;">Convenciones de commit por evento</div>
+      <div class="commit-table">
+        <div class="commit-row header">
+          <span>Evento</span>
+          <span>Formato de commit</span>
+        </div>
+        <div class="commit-row">
+          <span><span class="commit-tag">phase:complete</span></span>
+          <span class="commit-desc"><code>[Phase 2 Complete] Discovery & Definición — visión, scope y funcionalidades definidas</code></span>
+        </div>
+        <div class="commit-row">
+          <span><span class="commit-tag">progress:update</span></span>
+          <span class="commit-desc"><code>[Progress] Fase 3 · Análisis de competidores completado</code></span>
+        </div>
+        <div class="commit-row">
+          <span><span class="commit-tag">artifact:update</span></span>
+          <span class="commit-desc"><code>[Artifact] Sección de planificación técnica agregada</code></span>
+        </div>
+        <div class="commit-row">
+          <span><span class="commit-tag">decision:log</span></span>
+          <span class="commit-desc"><code>[Decision] Stack seleccionado: Next.js + Supabase + Vercel</code></span>
+        </div>
+        <div class="commit-row">
+          <span><span class="commit-tag">override:log</span></span>
+          <span class="commit-desc"><code>[Override] Fase 3 saltada por urgencia — aprobado por usuario</code></span>
+        </div>
+        <div class="commit-row">
+          <span><span class="commit-tag">claude-md:update</span></span>
+          <span class="commit-desc"><code>[CLAUDE.md] Actualización post cambio de arquitectura</code></span>
+        </div>
+      </div>
+
+      <!-- PROGRESS.md template -->
+      <div style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-muted); margin-bottom:10px;">PROGRESS.md — plantilla</div>
+      <div class="progress-md">
+        <div class="progress-md-header">
+          <span class="code-inline">PROGRESS.md</span>
+          <span style="font-size:11px; color:var(--text-muted);">Actualizado por Claude al cierre de cada sesión</span>
+        </div>
+        <div class="progress-md-body">
+          <div class="md-h2"># Project Progress</div>
+          <div>&nbsp;</div>
+          <div class="md-h3">## Estado actual</div>
+          <div>- <span class="md-warn">Fase activa:</span> 3 · Análisis de Mercado</div>
+          <div>- <span class="md-warn">Último paso completado:</span> Análisis de competidores directos</div>
+          <div>- <span class="md-warn">Próxima acción:</span> Análisis de tamaño de mercado TAM/SAM/SOM</div>
+          <div>&nbsp;</div>
+          <div class="md-h3">## Fases completadas</div>
+          <div><span class="md-check">✓</span> Fase 1 · Investigación</div>
+          <div><span class="md-check">✓</span> Fase 2 · Discovery & Definición</div>
+          <div>&nbsp;</div>
+          <div class="md-h3">## Fase actual · Criterios pendientes</div>
+          <div><span class="md-check">✓</span> Análisis de competidores completado</div>
+          <div><span class="md-pending">☐</span> Análisis de tamaño de mercado</div>
+          <div><span class="md-pending">☐</span> Identificación de oportunidades y riesgos</div>
+          <div><span class="md-pending">☐</span> Estrategia de posicionamiento</div>
+          <div>&nbsp;</div>
+          <div class="md-h3">## Overrides registrados</div>
+          <div><span class="md-warn">⚠</span> Ninguno hasta ahora</div>
+          <div>&nbsp;</div>
+          <div class="md-h3">## Links</div>
+          <div>- Artifact: docs/artifact.html</div>
+          <div>- Decisiones: docs/decisions/</div>
+        </div>
+      </div>
+    </section>
+    <!-- Commercial Proposal -->
+    <section id="commercial" style="margin-top: 48px;">
+      <div class="section-title">Propuesta Comercial — Gate al Cliente</div>
+
+      <p style="font-size:13px; color:var(--text-secondary); line-height:1.7; margin-bottom:20px;">
+        La sección de propuesta para el cliente en el artifact debe ser completa para que el gate sea efectivo. El cliente no puede tomar una decisión informada sin estos componentes.
+      </p>
+
+      <div class="model-table">
+        <div class="model-row header" style="grid-template-columns: 200px 1fr;">
+          <span>Componente</span>
+          <span>Descripción</span>
+        </div>
+        <div class="model-row" style="grid-template-columns: 200px 1fr;">
+          <span style="color:var(--text-secondary); font-weight:500; font-size:13px;">Resumen ejecutivo</span>
+          <span style="color:var(--text-secondary); font-size:12px;">El problema que se resuelve, por qué importa, y qué hace la solución en 3–5 oraciones. Escrito para un ejecutivo, no para un técnico.</span>
+        </div>
+        <div class="model-row" style="grid-template-columns: 200px 1fr;">
+          <span style="color:var(--text-secondary); font-weight:500; font-size:13px;">Propuesta de valor</span>
+          <span style="color:var(--text-secondary); font-size:12px;">Qué diferencia a esta solución de las alternativas existentes. Basada en el análisis de mercado de Fase 3.</span>
+        </div>
+        <div class="model-row" style="grid-template-columns: 200px 1fr;">
+          <span style="color:var(--text-secondary); font-weight:500; font-size:13px;">Scope y funcionalidades</span>
+          <span style="color:var(--text-secondary); font-size:12px;">Qué incluye exactamente la solución. Lo que está en scope y explícitamente lo que está fuera de scope.</span>
+        </div>
+        <div class="model-row" style="grid-template-columns: 200px 1fr;">
+          <span style="color:var(--text-secondary); font-weight:500; font-size:13px;">Timeline estimado</span>
+          <span style="color:var(--text-secondary); font-size:12px;">Fases, hitos y tiempos estimados. Basado en las estimaciones de Fase 4 si ya se hicieron, o en rangos si es pre-aprobación.</span>
+        </div>
+        <div class="model-row" style="grid-template-columns: 200px 1fr;">
+          <span style="color:var(--text-secondary); font-weight:500; font-size:13px;">Estructura de pricing</span>
+          <span style="color:var(--text-secondary); font-size:12px;">Modelo de cobro (proyecto fijo, retainer, por fase) y rangos de inversión. No necesariamente precio exacto en esta etapa.</span>
+        </div>
+        <div class="model-row" style="grid-template-columns: 200px 1fr;">
+          <span style="color:var(--text-secondary); font-weight:500; font-size:13px;">Próximos pasos</span>
+          <span style="color:var(--text-secondary); font-size:12px;">Qué pasa si el cliente aprueba: qué se necesita de su parte, cuándo arrancaríamos, primer entregable concreto.</span>
+        </div>
+      </div>
+    </section>
+    <!-- Enforcement Rules -->
+    <section id="enforcement" style="margin-top: 48px;">
+      <div class="section-title">Reglas de enforcement</div>
+
+      <div class="enforce-banner">
+        <div class="enforce-banner-icon">⚠️</div>
+        <div>
+          <div class="enforce-banner-title">Este framework es obligatorio, no opcional</div>
+          <div class="enforce-banner-desc">Claude no puede avanzar a una fase siguiente sin que se cumplan todos los criterios de salida de la fase actual. Si el usuario intenta saltarse el proceso, Claude detiene la ejecución y explica qué falta.</div>
+        </div>
+      </div>
+
+      <div class="rules-grid">
+
+        <div class="rule-card">
+          <div class="rule-number">R1</div>
+          <div class="rule-title">Verificación de criterios antes de avanzar</div>
+          <div class="rule-desc">Antes de comenzar cualquier fase, Claude verifica que todos los criterios de salida de la fase anterior estén cumplidos. Si alguno falta, Claude lo lista explícitamente y no procede.</div>
+        </div>
+
+        <div class="rule-card">
+          <div class="rule-number">R2</div>
+          <div class="rule-title">Redirección activa al proceso</div>
+          <div class="rule-desc">Si el usuario solicita trabajo que corresponde a una fase posterior sin haber completado la actual, Claude lo redirige: explica en qué fase se encuentran, qué falta, y por qué importa no saltarse ese paso.</div>
+        </div>
+
+        <div class="rule-card">
+          <div class="rule-number">R3</div>
+          <div class="rule-title">Override consciente para excepciones</div>
+          <div class="rule-desc">Si el usuario necesita saltarse fases por urgencia u otra razón válida, puede activar un override consciente. Claude lista los riesgos específicos de saltarse ese paso, y el usuario debe confirmar explícitamente escribiendo <span class="code-inline">Confirmo override</span>. El override queda documentado en el artifact.</div>
+        </div>
+
+        <div class="rule-card">
+          <div class="rule-number">R4</div>
+          <div class="rule-title">Input libre del usuario siempre permitido</div>
+          <div class="rule-desc">En cualquier fase, el usuario puede agregar contexto, corregir información o ajustar decisiones tomadas. El input libre no rompe el proceso — lo enriquece. Claude incorpora los cambios y actualiza el artifact.</div>
+        </div>
+
+        <div class="rule-card">
+          <div class="rule-number">R5</div>
+          <div class="rule-title">Artifact como fuente de verdad</div>
+          <div class="rule-desc">Toda decisión, cambio o override queda documentado en el artifact. Si hay contradicción entre lo que el usuario dice en chat y lo que está en el artifact, Claude señala la discrepancia antes de proceder.</div>
+        </div>
+
+        <div class="rule-card">
+          <div class="rule-number">R6</div>
+          <div class="rule-title">Herramienta correcta por fase</div>
+          <div class="rule-desc">Claude debe indicar al usuario si la tarea requiere cambiar de herramienta (ej. pasar de Chat a Cowork para investigación, o a Claude Code para desarrollo). No se ejecuta trabajo complejo de una herramienta desde otra.</div>
+        </div>
+
+
+        <div class="rule-card">
+          <div class="rule-number">R7</div>
+          <div class="rule-title">Datos client-facing verificados</div>
+          <div class="rule-desc">Todo dato cuantitativo que llegue a la propuesta o al demo (TAM, datos de competidores, métricas de mercado) debe tener fuente citada y verificable, o presentarse explícitamente como estimación. Un dato inventado frente a un prospecto que conoce su industria destruye la credibilidad — Claude nunca presenta números sin respaldo como hechos.</div>
+        </div>
+
+        <div class="rule-card">
+          <div class="rule-number">R8</div>
+          <div class="rule-title">Scope Creep controlado</div>
+          <div class="rule-desc">Cualquier expansión del scope original — venga del cliente, del usuario o del propio proceso (ej. un prototipo del Gate que crece más allá de lo planeado) — pasa por el flujo formal: evaluación de impacto → presentación → confirmación explícita con <span class="code-inline">Confirmo scope change</span> → documentación en PROGRESS.md. Ver la sección "Manejo de Scope Creep" para el flujo completo.</div>
+        </div>
+
+        <div class="rule-card">
+          <div class="rule-number">R9</div>
+          <div class="rule-title">Seguridad por diseño</div>
+          <div class="rule-desc">Todo producto cumple el perfil de seguridad definido en Fase 4 (sensibilidad de datos, auth, superficie de ataque) y el baseline del CLAUDE.md: validación server-side, AuthN+AuthZ en cada endpoint, queries parametrizadas, secrets fuera del código, rate limiting, headers, dependencias auditadas. Se aplica mientras se construye, no como parche al final. Un hallazgo crítico de seguridad bloquea el deploy igual que un error crítico funcional — saltárselo requiere Override Consciente.</div>
+        </div>
+      </div>
+
+      <!-- Override flow -->
+      <div class="override-box">
+        <div class="override-header">
+          <span class="override-badge">Override Consciente</span>
+          <span style="color:var(--text-muted); font-size:12px;">Flujo de excepción</span>
+        </div>
+        <div class="override-steps">
+          <div class="override-step">
+            <div class="override-step-num">1</div>
+            <div class="override-step-text">Usuario solicita saltarse una fase o avanzar sin cumplir criterios</div>
+          </div>
+          <div class="override-arrow">→</div>
+          <div class="override-step">
+            <div class="override-step-num">2</div>
+            <div class="override-step-text">Claude lista qué criterios faltan y los riesgos específicos de ignorarlos</div>
+          </div>
+          <div class="override-arrow">→</div>
+          <div class="override-step">
+            <div class="override-step-num">3</div>
+            <div class="override-step-text">Usuario confirma con <strong>"Confirmo override"</strong></div>
+          </div>
+          <div class="override-arrow">→</div>
+          <div class="override-step">
+            <div class="override-step-num">4</div>
+            <div class="override-step-text">Claude documenta el override en el artifact y procede</div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- Scope Creep -->
+    <section id="scope" style="margin-top: 48px; margin-bottom: 64px;">
+      <div class="section-title">Manejo de Scope Creep</div>
+
+      <p style="font-size:13px; color:var(--text-secondary); line-height:1.7; margin-bottom:24px;">
+        Cualquier solicitud que expanda el scope original del proyecto — ya sea del cliente, del usuario, o una decisión del equipo — debe seguir este proceso formal. Nada se agrega sin evaluación de impacto y aprobación explícita.
+      </p>
+
+      <!-- Scope flow -->
+      <div class="scope-flow">
+        <div class="scope-step">
+          <div class="scope-step-icon">📥</div>
+          <div class="scope-step-title">Propuesta de cambio</div>
+          <div class="scope-step-desc">El usuario describe el cambio solicitado: qué se quiere agregar, modificar o eliminar del scope original.</div>
+        </div>
+        <div class="scope-arrow">→</div>
+        <div class="scope-step">
+          <div class="scope-step-icon">🔍</div>
+          <div class="scope-step-title">Evaluación de impacto</div>
+          <div class="scope-step-desc">Claude evalúa: qué fases afecta, cuánto esfuerzo adicional implica, qué decisiones anteriores quedan invalidadas, y qué riesgos introduce.</div>
+        </div>
+        <div class="scope-arrow">→</div>
+        <div class="scope-step">
+          <div class="scope-step-icon">✅</div>
+          <div class="scope-step-title">Aprobación explícita</div>
+          <div class="scope-step-desc">El usuario aprueba o rechaza con contexto claro. Si aprueba, confirma entendiendo el impacto completo.</div>
+        </div>
+        <div class="scope-arrow">→</div>
+        <div class="scope-step">
+          <div class="scope-step-icon">📝</div>
+          <div class="scope-step-title">Actualización y commit</div>
+          <div class="scope-step-desc">Claude actualiza las fases afectadas en el artifact, el PROGRESS.md, y hace commit a GitHub con tag <span class="code-inline">scope:change</span>.</div>
+        </div>
+      </div>
+
+      <!-- Impact evaluation template -->
+      <div style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-muted); margin-bottom:10px; margin-top:24px;">Ejemplo de evaluación de impacto</div>
+      <div class="scope-impact-box">
+        <div class="scope-impact-header">
+          <span class="scope-impact-badge">Scope Change Request</span>
+          <span style="color:var(--text-muted); font-size:11px;">Evaluado por Claude</span>
+        </div>
+        <div class="scope-impact-body">
+          <div class="scope-impact-row">
+            <span class="scope-impact-label">Cambio solicitado</span>
+            <span class="scope-impact-value">Agregar módulo de pagos recurrentes</span>
+          </div>
+          <div class="scope-impact-row">
+            <span class="scope-impact-label">Fases afectadas</span>
+            <span class="scope-impact-value">Fase 2 (scope), Fase 4 (arquitectura + integración Stripe), Fase 5 (nuevas pantallas), Fase 6–7 (implementación)</span>
+          </div>
+          <div class="scope-impact-row">
+            <span class="scope-impact-label">Decisiones invalidadas</span>
+            <span class="scope-impact-value">Arquitectura de base de datos definida en Fase 4 requiere nuevas tablas. Stack de pagos no contemplado.</span>
+          </div>
+          <div class="scope-impact-row">
+            <span class="scope-impact-label">Esfuerzo estimado</span>
+            <span class="scope-impact-value">+2–3 semanas de desarrollo adicional</span>
+          </div>
+          <div class="scope-impact-row">
+            <span class="scope-impact-label">Riesgos</span>
+            <span class="scope-impact-value">Complejidad de compliance (PCI-DSS), nueva dependencia externa, posible retraso en entrega</span>
+          </div>
+          <div class="scope-impact-row highlight">
+            <span class="scope-impact-label">Para aprobar</span>
+            <span class="scope-impact-value">Escribe <strong>"Confirmo scope change"</strong> para proceder. Se actualizarán las fases 2, 4, 5 y el CLAUDE.md.</span>
+          </div>
+        </div>
+      </div>
+
+    </section>
+    <!-- Testing -->
+    <section id="testing" style="margin-top: 48px; margin-bottom: 64px;">
+      <div class="section-title">Testing & QA</div>
+
+      <p style="font-size:13px; color:var(--text-secondary); line-height:1.7; margin-bottom:20px;">
+        El testing está integrado en las fases de desarrollo como criterio de salida obligatorio — no como actividad opcional. No se puede avanzar de fase ni hacer deployment con errores críticos sin resolver.
+      </p>
+
+      <div class="config-grid">
+        <div class="config-card">
+          <div class="config-card-header">
+            <div class="config-icon">🧪</div>
+            <div>
+              <div class="config-title">Fase 6 · Testing del MVP</div>
+              <div class="config-subtitle">Testing funcional — criterio de salida obligatorio</div>
+            </div>
+          </div>
+          <div class="config-body">
+            <div class="config-steps">
+              <div class="config-step-item"><span class="config-step-num">1</span> Testing funcional de todas las features del scope mínimo</div>
+              <div class="config-step-item"><span class="config-step-num">2</span> Casos de uso principales cubiertos y validados</div>
+              <div class="config-step-item"><span class="config-step-num">3</span> Flujos críticos probados de extremo a extremo</div>
+              <div class="config-step-item"><span class="config-step-num">4</span> Errores críticos resueltos — no se cierra la fase con bugs críticos abiertos</div>
+              <div class="config-step-item"><span class="config-step-num">5</span> Resultados documentados en el artifact</div>
+            </div>
+          </div>
+        </div>
+        <div class="config-card">
+          <div class="config-card-header">
+            <div class="config-icon">🔬</div>
+            <div>
+              <div class="config-title">Fase 7 · QA Completo</div>
+              <div class="config-subtitle">QA integral — requerido antes del deployment</div>
+            </div>
+          </div>
+          <div class="config-body">
+            <div class="config-steps">
+              <div class="config-step-item"><span class="config-step-num">1</span> QA funcional completo incluyendo edge cases</div>
+              <div class="config-step-item"><span class="config-step-num">2</span> Testing de performance y carga (si aplica al tipo de producto)</div>
+              <div class="config-step-item"><span class="config-step-num">3</span> Revisión de seguridad básica antes del deployment</div>
+              <div class="config-step-item"><span class="config-step-num">4</span> Compatibilidad cross-browser y cross-device</div>
+              <div class="config-step-item"><span class="config-step-num">5</span> Todos los resultados documentados y aprobados antes de producción</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="enforce-banner" style="margin-top: 16px;">
+        <div class="enforce-banner-icon">🚫</div>
+        <div>
+          <div class="enforce-banner-title">Regla de testing</div>
+          <div class="enforce-banner-desc">Claude no ejecuta ni aprueba deployment a producción si hay errores críticos o si el QA de Fase 7 no está completo. Si el usuario insiste en hacer deployment sin QA completo, se activa el Override Consciente y se documenta el riesgo explícitamente antes de proceder.</div>
+        </div>
+      </div>
+    </section>
+    <!-- System Prompt -->
+    <section id="system-prompt" style="margin-top: 48px;">
+      <div class="section-title">Instrucciones del proyecto en Cowork</div>
+
+      <p style="font-size:13px; color:var(--text-secondary); line-height:1.7; margin-bottom:20px;">
+        El framework se activa en Cowork a través de las instrucciones del proyecto. El archivo <span class="code-inline">_context/framework.md</span> contiene estas instrucciones — se pega en cada proyecto de Cowork al crearlo. Para Code, el contexto viene de <span class="code-inline">.claude/rules/framework-rules.md</span> automáticamente.
+      </p>
+
+      <div class="enforce-banner" style="border-color: rgba(123,110,246,0.3); background: rgba(123,110,246,0.06); margin-bottom:20px;">
+        <div class="enforce-banner-icon">⚙️</div>
+        <div>
+          <div class="enforce-banner-title" style="color:var(--accent);">Dónde va este contenido</div>
+          <div class="enforce-banner-desc">En La app de Claude → abre el Project del cliente → Settings → Project Instructions → pega el contenido del archivo <span class="code-inline">system-prompt.md</span>. Todos los miembros del equipo que accedan al proyecto recibirán automáticamente estas instrucciones en cada conversación.</div>
+        </div>
+      </div>
+
+      <div class="config-grid">
+        <div class="config-card">
+          <div class="config-card-header">
+            <div class="config-icon">📋</div>
+            <div>
+              <div class="config-title">Qué enforce en cada sesión de Cowork</div>
+              <div class="config-subtitle">Comportamientos automáticos via instrucciones del proyecto</div>
+            </div>
+          </div>
+          <div class="config-body">
+            <div class="config-steps">
+              <div class="config-step-item"><span class="config-step-num">✓</span> Status Check obligatorio al inicio de cada sesión</div>
+              <div class="config-step-item"><span class="config-step-num">✓</span> Verificación de criterios de salida antes de avanzar</div>
+              <div class="config-step-item"><span class="config-step-num">✓</span> Override Consciente cuando el usuario intenta saltarse pasos</div>
+              <div class="config-step-item"><span class="config-step-num">✓</span> Bloque "¿Qué sigue?" al cerrar cada paso o fase</div>
+              <div class="config-step-item"><span class="config-step-num">✓</span> Evaluación de impacto ante scope creep</div>
+              <div class="config-step-item"><span class="config-step-num">✓</span> Commits a GitHub con formato correcto</div>
+              <div class="config-step-item"><span class="config-step-num">✓</span> Guía de herramienta y modelo por fase</div>
+            </div>
+          </div>
+        </div>
+        <div class="config-card">
+          <div class="config-card-header">
+            <div class="config-icon">🔄</div>
+            <div>
+              <div class="config-title">Cuándo actualizar las instrucciones</div>
+              <div class="config-subtitle">_context/framework.md es la fuente de verdad</div>
+            </div>
+          </div>
+          <div class="config-body">
+            <div class="config-steps">
+              <div class="config-step-item"><span class="config-step-num">→</span> Cuando se agrega o modifica una fase del framework</div>
+              <div class="config-step-item"><span class="config-step-num">→</span> Cuando se cambian los modelos recomendados por fase</div>
+              <div class="config-step-item"><span class="config-step-num">→</span> Cuando se agregan nuevas reglas de enforcement</div>
+              <div class="config-step-item"><span class="config-step-num">→</span> Cuando se identifica un gap o mejora del proceso</div>
+              <div class="config-step-item"><span class="config-step-num">→</span> Actualizar <span class="code-inline">_context/framework.md</span> en el template repo y volver a pegar en los proyectos activos de Cowork</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- Configuration -->
+    <section id="config" style="margin-top: 48px; margin-bottom: 64px;">
+      <div class="section-title">Configuración del framework</div>
+
+      <p style="font-size:13px; color:var(--text-secondary); line-height:1.7; margin-bottom:24px;">
+        Los tres tabs de Claude (Chat, Cowork, Code) tienen sistemas de contexto separados. Cada uno se configura de forma independiente. El <span class="code-inline">PROGRESS.md</span> es el puente que los mantiene sincronizados.
+      </p>
+
+      <div class="rules-grid">
+
+        <div class="rule-card">
+          <div class="rule-number" style="color:#A78BFA; background:rgba(167,139,250,0.08); border-color:rgba(167,139,250,0.25);">Cowork</div>
+          <div class="rule-title">Proyecto por cliente — instrucciones desde el repo</div>
+          <div class="rule-desc">
+            Cowork → New Project → seleccionar carpeta del proyecto → pegar contenido de <span class="code-inline">_context/framework.md</span> en las instrucciones del proyecto.<br><br>
+            Local: cada miembro configura su propio Cowork por proyecto. <span class="code-inline">_context/framework.md</span> en el repo es la fuente de verdad — si el framework evoluciona, se actualiza el archivo y se vuelve a pegar.
+          </div>
+        </div>
+
+        <div class="rule-card">
+          <div class="rule-number" style="color:#34D399; background:rgba(52,211,153,0.08); border-color:rgba(52,211,153,0.25);">Code</div>
+          <div class="rule-title">Automático — cero configuración</div>
+          <div class="rule-desc">
+            Claude Code lee <span class="code-inline">.claude/rules/framework-rules.md</span> y <span class="code-inline">CLAUDE.md</span> automáticamente al abrir el repositorio.<br><br>
+            Al clonar el template, el contexto del framework ya está disponible para todos los miembros del equipo sin hacer nada.
+          </div>
+        </div>
+
+        <div class="rule-card">
+          <div class="rule-number" style="color:#F5A623; background:rgba(245,166,35,0.08); border-color:rgba(245,166,35,0.25);">Sync</div>
+          <div class="rule-title">PROGRESS.md — puente entre los tres tabs</div>
+          <div class="rule-desc">
+            Como los tres tabs tienen contextos separados, <span class="code-inline">PROGRESS.md</span> es la fuente de verdad compartida. Claude lo actualiza y commitea al cerrar cada sesión en cualquier herramienta. Al iniciar una sesión en un tab diferente, Claude lo lee para retomar donde se dejó.
+          </div>
+        </div>
+
+      </div>
+
+      <!-- CLAUDE.md structure -->
+      <div class="claudemd-box" style="margin-top: 20px;">
+        <div class="claudemd-header">
+          <span class="code-inline" style="font-size:13px;">CLAUDE.md</span>
+          <span style="color:var(--text-muted); font-size:11px; font-family:'JetBrains Mono',monospace;">Generado en Fase 4 · Auto-actualizable</span>
+        </div>
+        <div class="claudemd-body">
+          <div class="claudemd-section">## Proyecto</div>
+          <div class="claudemd-line">Nombre, cliente, descripción del producto</div>
+          <div class="claudemd-section">## Stack</div>
+          <div class="claudemd-line">Frontend, backend, base de datos, infra</div>
+          <div class="claudemd-section">## Arquitectura</div>
+          <div class="claudemd-line">Estructura de carpetas, módulos principales, patrones</div>
+          <div class="claudemd-section">## Convenciones</div>
+          <div class="claudemd-line">Naming, formato de código, reglas de git, testing</div>
+          <div class="claudemd-section">## Reglas del proyecto</div>
+          <div class="claudemd-line">Lo que Claude Code debe y no debe hacer en este repo</div>
+          <div class="claudemd-section">## Estado actual</div>
+          <div class="claudemd-line">Fase del framework, último hito completado, próximos pasos</div>
+        </div>
+      </div>
+
+    </section>
+    <!-- Team Coordination -->
+    <section id="team" style="margin-top: 48px;">
+      <div class="section-title">Coordinación de equipo</div>
+
+      <p style="font-size:13px; color:var(--text-secondary); line-height:1.7; margin-bottom:20px;">
+        Múltiples miembros del equipo pueden trabajar en el mismo Claude Project. Estas reglas evitan conflictos y garantizan que el proceso avance de manera coherente.
+      </p>
+
+      <div class="rules-grid">
+        <div class="rule-card">
+          <div class="rule-number">T1</div>
+          <div class="rule-title">PROGRESS.md como sincronizador</div>
+          <div class="rule-desc">Antes de trabajar en cualquier sesión, Claude lee el PROGRESS.md. Cualquier cambio al estado del proyecto se commitea inmediatamente. El equipo siempre sabe dónde están mirando el PROGRESS.md.</div>
+        </div>
+        <div class="rule-card">
+          <div class="rule-number">T2</div>
+          <div class="rule-title">Una persona activa a la vez</div>
+          <div class="rule-desc">Solo un miembro del equipo trabaja activamente en el proceso en un momento dado. Si el PROGRESS.md fue actualizado hace menos de 2 horas, Claude avisa antes de hacer cambios y sugiere confirmar con el equipo.</div>
+        </div>
+        <div class="rule-card">
+          <div class="rule-number">T3</div>
+          <div class="rule-title">Commits inmediatos</div>
+          <div class="rule-desc">Todo cambio al artifact, PROGRESS.md o CLAUDE.md se commitea inmediatamente al finalizar la sesión o el paso. Nunca se trabaja con cambios no commiteados entre sesiones del equipo.</div>
+        </div>
+        <div class="rule-card">
+          <div class="rule-number">T4</div>
+          <div class="rule-title">El artifact es la fuente de verdad</div>
+          <div class="rule-desc">Si hay contradicción entre lo que alguien recuerda y lo que está en el artifact o PROGRESS.md, gana el documento. Claude señala la contradicción antes de proceder.</div>
+        </div>
+      </div>
+    </section>
+    <!-- User Guidance -->
+    <section id="guidance" style="margin-top: 48px;">
+      <div class="section-title">Guía al usuario</div>
+
+      <p style="font-size:13px; color:var(--text-secondary); line-height:1.7; margin-bottom:24px;">
+        Claude guía activamente al usuario en cada momento del proceso. El usuario nunca debe preguntarse "¿qué hago ahora?" — Claude siempre tiene una respuesta clara y contextual. Estos son los tres momentos clave de guía.
+      </p>
+
+      <div class="guidance-flow">
+
+        <!-- Session start -->
+        <div class="guidance-card">
+          <div class="guidance-card-header">
+            <span class="guidance-moment moment-start">Inicio de sesión</span>
+            <span class="guidance-card-title">Status Check</span>
+          </div>
+          <div class="guidance-card-body">
+            <p style="font-size:13px; color:var(--text-secondary); line-height:1.7; margin-bottom:12px;">Al iniciar cualquier sesión nueva, Claude lee el <span class="code-inline">PROGRESS.md</span> del proyecto y presenta un resumen de estado: dónde están, qué se hizo la última vez, y cuál es la próxima acción exacta. El usuario no necesita recordar nada ni ponerse al día manualmente.</p>
+            <div class="guidance-example">
+              "📍 <strong>Status Check — [Nombre del Proyecto]</strong><br>
+              Estás en <strong>Fase 3 · Análisis de Mercado</strong>.<br>
+              La última sesión completamos el análisis de competidores directos.<br>
+              <br>
+              Criterios pendientes para cerrar esta fase:<br>
+              ☐ Análisis de tamaño de mercado (TAM/SAM/SOM)<br>
+              ☐ Oportunidades y riesgos<br>
+              ☐ Estrategia de posicionamiento<br>
+              <br>
+              <strong>Siguiente paso:</strong> Análisis de tamaño de mercado. ¿Empezamos?"
+            </div>
+          </div>
+        </div>
+
+        <!-- During session -->
+        <div class="guidance-card">
+          <div class="guidance-card-header">
+            <span class="guidance-moment moment-during">Durante la sesión</span>
+            <span class="guidance-card-title">Orientación contextual</span>
+          </div>
+          <div class="guidance-card-body">
+            <p style="font-size:13px; color:var(--text-secondary); line-height:1.7; margin-bottom:12px;">Si el usuario hace una pregunta fuera del contexto actual, Claude la responde pero recuerda en qué parte del proceso están y qué queda pendiente. Si el usuario parece perdido o no sabe cómo continuar, Claude toma la iniciativa y propone el siguiente paso concreto.</p>
+            <div class="guidance-example during">
+              "Respondí tu pregunta sobre el stack. Recuerda que aún estamos en Fase 3 y nos falta completar el análisis de mercado antes de llegar a la planificación técnica donde eso aplica. ¿Continuamos con el TAM/SAM/SOM?"
+            </div>
+          </div>
+        </div>
+
+        <!-- Session end -->
+        <div class="guidance-card">
+          <div class="guidance-card-header">
+            <span class="guidance-moment moment-end">Cierre de sesión o fase</span>
+            <span class="guidance-card-title">Bloque "¿Qué sigue?"</span>
+          </div>
+          <div class="guidance-card-body">
+            <p style="font-size:13px; color:var(--text-secondary); line-height:1.7; margin-bottom:12px;">Al cerrar una fase o cuando el usuario indica que termina la sesión, Claude actualiza el <span class="code-inline">PROGRESS.md</span>, hace commit a GitHub, y presenta un bloque claro con los próximos 1–3 pasos concretos para la siguiente sesión.</p>
+            <div class="guidance-example end">
+              "✅ <strong>Fase 3 completada.</strong> He actualizado el PROGRESS.md y el artifact.<br><br>
+              <strong>¿Qué sigue?</strong><br>
+              1. <strong>Próxima sesión:</strong> Fase 4 · Planificación Técnica en Cowork con Opus 4.8<br>
+              2. <strong>Qué traer:</strong> No necesitas nada — tengo todo el contexto en el artifact<br>
+              3. <strong>Tiempo estimado:</strong> 1–2 sesiones para definir stack y arquitectura completa"
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+    <!-- Existing Projects -->
+    <section id="existing" style="margin-top: 48px; margin-bottom: 64px;">
+      <div class="section-title">Proyectos existentes — Onboarding & Backfill</div>
+
+      <p style="font-size:13px; color:var(--text-secondary); line-height:1.7; margin-bottom:24px;">
+        Para proyectos que ya están iniciados o en producción, existe una <strong>Fase 0 de Auditoría</strong> que antecede al framework estándar. Claude evalúa el estado real del proyecto, mapea lo que existe a las fases del framework, identifica gaps, y genera un Backfill Plan con acciones obligatorias y opcionales.
+      </p>
+
+      <!-- Audit steps -->
+      <div style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-muted); margin-bottom:12px;">Fase 0 · Project Audit — 4 pasos</div>
+      <div class="audit-flow">
+        <div class="audit-step">
+          <div class="audit-step-num">01</div>
+          <div class="audit-step-title">Dump de contexto</div>
+          <div class="audit-step-desc">El usuario comparte todo lo que existe: código, docs, decisiones, wireframes, conversaciones previas, cualquier contexto disponible. Sin filtro.</div>
+        </div>
+        <div class="audit-step">
+          <div class="audit-step-num">02</div>
+          <div class="audit-step-title">Mapeo al framework</div>
+          <div class="audit-step-desc">Claude analiza todo lo recibido y mapea cada elemento a la fase del framework que corresponde. Identifica qué está cubierto, qué está incompleto, y qué está ausente.</div>
+        </div>
+        <div class="audit-step">
+          <div class="audit-step-num">03</div>
+          <div class="audit-step-title">Backfill Plan</div>
+          <div class="audit-step-desc">Claude genera el plan de backfill con dos categorías: gaps obligatorios (bloquean el avance) y gaps opcionales (se pueden aceptar con override documentado).</div>
+        </div>
+        <div class="audit-step">
+          <div class="audit-step-num">04</div>
+          <div class="audit-step-title">Inicialización</div>
+          <div class="audit-step-desc">Una vez aprobado el Backfill Plan, Claude inicializa el framework: crea el PROGRESS.md, genera el artifact con lo que existe, y configura el repo en GitHub.</div>
+        </div>
+      </div>
+
+      <!-- Backfill Plan table -->
+      <div style="font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-muted); margin-bottom:10px;">Ejemplo de Backfill Plan</div>
+      <div class="backfill-table">
+        <div class="backfill-row header">
+          <span>Fase</span>
+          <span>Estado</span>
+          <span>Acción requerida</span>
+        </div>
+        <div class="backfill-row">
+          <span style="color:var(--text-secondary);">1 · Investigación</span>
+          <span><span class="gap-ok">Completo</span></span>
+          <span style="color:var(--text-secondary);">Existía contexto suficiente. Claude lo documenta en el artifact.</span>
+        </div>
+        <div class="backfill-row">
+          <span style="color:var(--text-secondary);">2 · Discovery</span>
+          <span><span class="gap-ok">Completo</span></span>
+          <span style="color:var(--text-secondary);">Visión y scope ya definidos. Claude los extrae y formaliza.</span>
+        </div>
+        <div class="backfill-row">
+          <span style="color:var(--text-secondary);">3 · Análisis Mercado</span>
+          <span><span class="gap-mandatory">Obligatorio</span></span>
+          <span style="color:var(--text-secondary);">No existe análisis formal. Debe completarse antes de avanzar — sin esto no hay base estratégica documentada.</span>
+        </div>
+        <div class="backfill-row">
+          <span style="color:var(--text-secondary);">4 · Plan. Técnica</span>
+          <span><span class="gap-optional">Opcional</span></span>
+          <span style="color:var(--text-secondary);">El stack está definido informalmente. Se puede aceptar con override documentado o formalizarlo — recomendado si el equipo va a cambiar.</span>
+        </div>
+        <div class="backfill-row">
+          <span style="color:var(--text-secondary);">5 · Diseño / UX</span>
+          <span><span class="gap-mandatory">Obligatorio</span></span>
+          <span style="color:var(--text-secondary);">No hay design system documentado. Debe crearse aunque sea retrospectivamente para que Claude Code trabaje con referencias claras.</span>
+        </div>
+        <div class="backfill-row">
+          <span style="color:var(--text-secondary);">6–7 · MVP / Dev</span>
+          <span><span class="gap-ok">Activo</span></span>
+          <span style="color:var(--text-secondary);">En curso — el código existente se integra al flujo de Fases 6–7, usando el design system retrospectivo como referencia.</span>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+</div>
+
+<footer>
+  <div class="footer-text">
+    <strong>Product Development Framework</strong> · Documento interno · v2.2
+  </div>
+  <div class="footer-text">
+    Actualizado conforme evoluciona el proceso
+  </div>
+</footer>
+
+<script>
+function togglePhase(header) {
+  header.parentElement.classList.toggle('open');
+}
+function openPhase(i) {
+  var cards = document.querySelectorAll('.phase-card');
+  if (cards[i]) cards[i].classList.add('open');
+}
+function switchTab(btn, name) {
+  document.querySelectorAll('.gs-tab').forEach(function (b) { b.classList.remove('active'); });
+  btn.classList.add('active');
+  document.querySelectorAll('.gs-panel').forEach(function (p) { p.style.display = 'none'; });
+  var panel = document.getElementById('gs-' + name);
+  if (panel) panel.style.display = 'block';
+}
+var navLinks = document.querySelectorAll('nav .nav-item');
+navLinks.forEach(function (link) {
+  link.addEventListener('click', function () {
+    navLinks.forEach(function (l) { l.classList.remove('active'); });
+    link.classList.add('active');
+  });
+});
+</script>
+</body>
+</html>

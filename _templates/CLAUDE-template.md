@@ -46,6 +46,7 @@
 │   └── types/            # [descripción]
 ├── docs/
 │   ├── artifact.html     # Artifact central del proyecto
+│   ├── design/           # Handoff de Fase 5: prototype/, design-tokens.md, components.md, flows.md — fuente de verdad visual
 │   └── decisions/        # Log de decisiones técnicas
 ├── CLAUDE.md             # Este archivo
 ├── PROGRESS.md           # Estado del framework
@@ -64,23 +65,83 @@
 
 ---
 
+## Entornos
+
+> Definidos en Fase 4. Todo desarrollo fluye **local → staging → production**. Ningún cambio llega a production sin haber pasado por los entornos anteriores.
+> Nota de nomenclatura: staging es lo que Vercel llama "Preview" — mismo concepto, un entorno de verificación separado de production. Aquí lo llamamos siempre staging.
+
+| Entorno | Propósito | URL | Base de datos | Deploy |
+|---------|-----------|-----|---------------|--------|
+| **Local** | Desarrollo diario | `localhost:[puerto]` | [DB local / rama dev de la DB] | Manual (`npm run dev`) |
+| **Staging** | Verificación pre-producción: deploys por PR/branch, QA y demos al cliente | [URL de staging / auto-generada por PR] | [DB de staging — separada] | Automático por PR o al merge a `[branch]` |
+| **Production** | Usuarios reales | [URL de producción] | [DB de producción — separada] | [Automático al merge a `main` / manual con aprobación] |
+
+### Reglas de entornos
+- **Bases de datos separadas por entorno.** Production tiene su propia DB; staging usa otra (o ramas de DB si el proveedor lo soporta, ej. Neon/Supabase/PlanetScale branching). Local usa DB local o una rama de desarrollo. NUNCA apuntar local o staging a la DB de producción.
+- **Migraciones:** se prueban primero en local, luego se aplican a staging, y solo después de verificarlas ahí se aplican a production. Toda migración queda versionada en el repo.
+- **Datos:** production nunca se usa como fuente de datos de prueba. Staging usa datos seed o copias anonimizadas.
+- **Secrets por entorno:** cada entorno tiene sus propias keys (API keys de test vs. live, ej. Stripe test/live). Un secret de production nunca se usa en local ni staging.
+- **Servicios externos:** usar modo test/sandbox de cada integración (pagos, email, storage) en local y staging; modo live solo en production.
+- **Flujo de promoción:** feature branch (local) → PR con deploy de staging → QA → merge/promote a production. Los criterios de Fase 6 exigen MVP verificado en staging; los de Fase 7 exigen QA completo antes de production.
+
+### Setup de entornos (Fase 6, antes de la primera feature)
+1. Configurar el hosting con los entornos y sus branches correspondientes
+2. Crear las bases de datos separadas (o ramas de DB) y registrar sus URLs en los secrets de cada entorno
+3. Configurar las variables de entorno por entorno en el hosting (nunca en el repo)
+4. Verificar el pipeline completo con un cambio trivial: local → staging → production
+5. Documentar las URLs resultantes en la tabla de arriba
+
+---
+
 ## Variables de entorno
 
-> ⚠️ Nunca hardcodear valores. Todos los secrets van en `.env.local` (desarrollo) y en las variables del hosting (producción).
+> ⚠️ Nunca hardcodear valores. Local usa `.env.local` (git-ignored); staging y production usan las variables del hosting, configuradas por entorno. Cada entorno tiene sus propios valores — especialmente `DATABASE_URL` y las keys de servicios externos (test vs. live).
 
 ```bash
-# Requeridas
-DATABASE_URL=
+# Requeridas (valores distintos por entorno)
+DATABASE_URL=            # DB local / staging / production — según el entorno
 NEXTAUTH_SECRET=
-NEXTAUTH_URL=
+NEXTAUTH_URL=            # localhost / URL staging / URL production
 
-# APIs externas
+# APIs externas (keys de test en local/staging, live solo en production)
 [NOMBRE_API]_KEY=
 
 # Storage
 [STORAGE_SERVICE]_URL=
 [STORAGE_SERVICE]_KEY=
 ```
+
+---
+
+## Seguridad
+
+> Definido en Fase 4. La seguridad se aplica **mientras se construye**, no como parche al final. Todo hallazgo crítico bloquea el deploy igual que un error funcional crítico.
+
+### Perfil de seguridad del producto
+
+| Campo | Valor |
+|-------|-------|
+| **Sensibilidad de datos** | [PII / datos de pago / datos de salud / datos internos / público] |
+| **Modelo de auth** | [email+password / OAuth / SSO / magic link — y roles: admin, usuario, etc.] |
+| **Superficie de ataque** | [web pública / API pública / solo interna / móvil] |
+| **Requisitos específicos** | [PCI si hay pagos, protección de menores, regulación local, etc. — o "ninguno especial"] |
+
+### Baseline de seguridad (aplica SIEMPRE, en todo producto)
+
+- **Validación de inputs:** todo input del usuario se valida y sanitiza **en el servidor** (los checks del cliente son solo UX). Queries siempre parametrizadas / vía ORM — nunca concatenar SQL.
+- **AuthN + AuthZ en cada endpoint:** toda ruta, API route o server action verifica sesión Y permisos (ownership/rol) en el servidor. Nunca confiar en lo que manda el cliente (IDs, roles, precios).
+- **XSS y CSRF:** escape de output por defecto (no `dangerouslySetInnerHTML` sin sanitizar), tokens CSRF en mutaciones si el framework no los trae, cookies `httpOnly` + `secure` + `sameSite`.
+- **Secrets:** nunca en el código ni en el repo (ya cubierto en Entornos); mínimo privilegio en credenciales de DB y servicios.
+- **Base de datos:** permisos mínimos por entorno; si es Supabase/Postgres con acceso desde cliente, **RLS obligatorio en todas las tablas**.
+- **Rate limiting** en auth, formularios públicos y APIs expuestas. Mensajes de error genéricos en login (no revelar si el email existe).
+- **Headers de seguridad:** CSP, `X-Frame-Options`/`frame-ancestors`, `X-Content-Type-Options`, HSTS. HTTPS en todos los entornos remotos.
+- **Uploads** (si hay): validar tipo y tamaño en servidor, almacenar fuera del web root / en storage dedicado, nunca servir con el content-type que declaró el cliente.
+- **Errores y logs:** los errores al usuario no exponen stack traces ni internals; los logs no guardan passwords, tokens ni datos sensibles.
+- **Dependencias:** auditoría (`npm audit` o equivalente) al cerrar cada fase — sin vulnerabilidades críticas en Fase 6, sin críticas ni altas para producción en Fase 7.
+
+### Verificación por fase
+- **Fase 6 (cierre):** checklist baseline aplicado + `npm audit` sin críticas + AuthZ verificada en los flujos core.
+- **Fase 7 (antes de producción):** revisión completa contra este documento + auditoría de dependencias limpia + verificación de headers, rate limiting y RLS en staging. Un pendiente crítico de seguridad = no hay deploy (Override Consciente requerido para saltarlo).
 
 ---
 
@@ -120,6 +181,7 @@ NEXTAUTH_URL=
 
 ### Siempre hacer:
 - Leer este archivo al inicio de cada sesión
+- Leer `docs/design/` antes de implementar cualquier UI — es la fuente de verdad visual (handoff de Fase 5); construir sobre el prototipo, no reinventar
 - Seguir las convenciones de naming definidas arriba
 - Escribir tests para funcionalidades críticas
 - Documentar funciones complejas con JSDoc/docstrings
@@ -129,6 +191,9 @@ NEXTAUTH_URL=
 ### Nunca hacer:
 - Hardcodear secrets, API keys o credenciales
 - Hacer cambios en producción sin pasar por staging primero
+- Conectarse a la DB de producción desde local o staging, ni usarla para pruebas
+- Aplicar migraciones directamente en producción sin haberlas verificado en staging
+- Usar keys live de servicios externos (pagos, email) fuera de production
 - Modificar la estructura de la base de datos sin documentar la migración
 - Hacer commit de archivos `.env` o `.env.local`
 - Cambiar el stack o la arquitectura sin aprobación del usuario
@@ -144,13 +209,11 @@ NEXTAUTH_URL=
 
 ### Completado
 - [x] [Funcionalidad o módulo completado]
-- [x] [Funcionalidad o módulo completado]
 
 ### En progreso
 - [ ] [Funcionalidad actual]
 
 ### Pendiente
-- [ ] [Funcionalidad pendiente]
 - [ ] [Funcionalidad pendiente]
 
 ---
@@ -163,4 +226,4 @@ NEXTAUTH_URL=
 
 ---
 
-*Generado por el Product Development Framework v2.0 — Fase 4 · Planificación Técnica*
+*Generado por el Product Development Framework v2.2 — Fase 4 · Planificación Técnica*

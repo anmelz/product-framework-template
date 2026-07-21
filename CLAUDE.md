@@ -7,4 +7,4 @@ Proyecto en fases iniciales. Stack, arquitectura y convenciones se definen en Fa
 Consulta `PROGRESS.md` para el estado actual.
 
 ---
-*Product Development Framework v2.0 — Pendiente Fase 4*
+*Product Development Framework v2.2 — Pendiente Fase 4*

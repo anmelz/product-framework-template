@@ -9,7 +9,7 @@
 | Campo | Valor |
 |-------|-------|
 | **Fase activa** | [N · Nombre de la fase] |
-| **Herramienta** | [Chat / Cowork / Design / Code] |
+| **Herramienta** | [Cowork / Design / Code] |
 | **Modelo** | [claude-fable-5 / claude-opus-4-8 / claude-sonnet-5] |
 | **Último paso** | [Descripción del último paso completado] |
 | **Próxima acción** | [Acción concreta y específica para la siguiente sesión] |
@@ -22,10 +22,11 @@
 | Fase | Estado | Fecha de cierre |
 |------|--------|----------------|
 | Pre-setup | ✅ Completo | [fecha] |
+| -1 · Calificación | ✅ Completo | [fecha] |
 | 1 · Investigación | ✅ Completo | [fecha] |
 | 2 · Discovery & Definición | ✅ Completo | [fecha] |
 | 3 · Análisis de Mercado | 🔄 En progreso | — |
-| Gate · Presentación al Cliente | ⏳ Pendiente | — |
+| Gate · Propuesta (+ Prototipo) | ⏳ Pendiente | — |
 | 4 · Planificación Técnica | ⏳ Pendiente | — |
 | 5 · Diseño / UX | ⏳ Pendiente | — |
 | 6 · MVP | ⏳ Pendiente | — |
@@ -80,3 +81,6 @@
 ### [YYYY-MM-DD] — [Descripción breve]
 - ✅ [Lo que se completó]
 - ⏭️ Siguiente: [próxima acción]
+
+---
+*Product Development Framework v2.2*

@@ -141,5 +141,5 @@ Si decides avanzar:
 
 ---
 
-*Propuesta válida por [30] días · Generada con el Product Development Framework v2.0*
+*Propuesta válida por [30] días · Generada con el Product Development Framework v2.2*
 *Para preguntas: [contacto]*

@@ -193,6 +193,7 @@ El proyecto trae agentes especializados en `.claude/agents/` (cada uno con su mo
 **En Cowork (Fases 1 y 3):** lanza `investigador` en paralelo — uno por competidor, uno para mercado/TAM, uno para el perfil del prospecto — y consolida los hallazgos en el artifact. En Fast Track esto comprime la sesión única. Cada agente arranca sin contexto: dale el objetivo, el cliente y qué se necesita, completo.
 
 **Reglas de paralelización:**
+- **Multi-instancia del mismo rol**: los agentes son tipos, no instancias únicas — lanza tantas copias simultáneas como objetivos independientes haya (3 competidores = 3 `investigador` a la vez; 3 features sin archivos compartidos = 3 `implementador`). Aplica a los roles de trabajo divisible: `investigador`, `implementador`, `tester`. Los roles de veredicto (`revisor-seguridad`, `verificador-qa`) van SIEMPRE de a uno — auditan estado global y duplicarlos es trabajo repetido. Reparte sin solape: dos instancias nunca comparten objetivo ni archivos.
 - Se paraleliza lo **independiente**: investigación por objetivo, features sin archivos compartidos, tests de una feature vs. desarrollo de otra, revisión de seguridad junto al desarrollo.
 - Se serializa lo que **comparte estado**: schema/migraciones de DB, config global, layout/componentes compartidos — un solo agente (o el hilo principal) a la vez.
 - Al cerrar cualquier fase: `verificador-qa` verifica los criterios; en Fases 6-7, `revisor-seguridad` da su veredicto. Ambos reportan, el hilo principal decide con el usuario.

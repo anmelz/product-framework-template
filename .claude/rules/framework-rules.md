@@ -59,6 +59,7 @@ Implementas, testeas y corriges. El usuario aprueba antes de avanzar de fase.
 ## Sistema de agentes (Fases 6-7)
 Agentes especializados en `.claude/agents/`: `implementador` (Sonnet), `tester` (Sonnet), `revisor-seguridad` (Opus), `verificador-qa` (Sonnet).
 - **Paraleliza lo independiente**: features sin archivos compartidos → un `implementador` por feature, en paralelo. Tests de una feature terminada en paralelo con el desarrollo de la siguiente. `revisor-seguridad` junto al desarrollo al cerrar cada bloque.
+- **Multi-instancia**: puedes lanzar varias copias del mismo rol a la vez (`implementador`/`tester` — uno por feature, sin solape de archivos). Los roles de veredicto (`revisor-seguridad`, `verificador-qa`) van siempre de a uno: auditan estado global.
 - **Serializa lo compartido**: schema/migraciones, config global, componentes/layout compartidos — nunca dos agentes a la vez. Si un implementador reporta que necesita un cambio compartido, hazlo en el hilo principal antes de continuar.
 - Cada agente arranca sin contexto: pásale la spec completa, qué archivos de `docs/design/` le tocan, y las convenciones relevantes del CLAUDE.md.
 - **Cierres de fase**: `verificador-qa` verifica criterios de salida (R1) y `revisor-seguridad` da veredicto (R9) — obligatorios antes de cerrar Fase 6 y Fase 7. Ellos reportan; tú decides con el usuario.

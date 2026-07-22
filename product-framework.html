@@ -3198,7 +3198,7 @@
         <div class="enforce-banner-icon">⚡</div>
         <div>
           <div class="enforce-banner-title" style="color:var(--accent-2);">Reglas de paralelización</div>
-          <div class="enforce-banner-desc">Se paraleliza lo <strong>independiente</strong>: investigación por objetivo, features sin archivos compartidos, tests de una feature vs. desarrollo de otra, seguridad junto al desarrollo. Se serializa lo que <strong>comparte estado</strong>: schema/migraciones, config global, layout y componentes compartidos — nunca dos agentes a la vez. Cada agente arranca sin contexto: recibe la spec completa. Y más agentes no siempre es mejor — si las tareas son dependientes, paralelizar solo suma costo; ante la duda, serializa.</div>
+          <div class="enforce-banner-desc">Los agentes son <strong>tipos, no instancias únicas</strong>: se lanzan tantas copias simultáneas del mismo rol como objetivos independientes haya (3 competidores = 3 investigadores; 3 features sin archivos compartidos = 3 implementadores) — aplica a los roles de trabajo divisible (investigador, implementador, tester); los de veredicto (revisor-seguridad, verificador-qa) van siempre de a uno porque auditan estado global. Se paraleliza lo <strong>independiente</strong> y se serializa lo que <strong>comparte estado</strong>: schema/migraciones, config global, layout y componentes compartidos — nunca dos agentes a la vez, y dos instancias nunca comparten objetivo ni archivos. Cada agente arranca sin contexto: recibe la spec completa. Y más agentes no siempre es mejor — si las tareas son dependientes, paralelizar solo suma costo; ante la duda, serializa.</div>
         </div>
       </div>
     </section>

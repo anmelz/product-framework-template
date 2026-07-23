@@ -29,6 +29,18 @@
 
 ## Log de sesiones
 
+### 2026-07-22 — Absorción de patrones de recursos de la comunidad (tododeia)
+Investigación con 4 agentes en paralelo sobre la bóveda de tododeia.com/community (The Architect, Cyber Neo, Ponytail, claude-webkit, ui-ux-pro-max, huashu-design, vercel agent-skills, guías de modelos/esfuerzo/tokens). Se absorbieron CONCEPTOS (no las herramientas) que no rompen la lógica del framework:
+- **Build Order** (de The Architect): nueva sección en `CLAUDE-template.md` — secuencia numerada de construcción con entregables/dependencias, criterio "una instancia sin contexto construye sin preguntar"; pasos compartidos serializados en hilo principal, independientes a `implementador` en paralelo. Criterio de salida de Fase 4 y regla de Code.
+- **Mecánicas de auditoría** (de Cyber Neo) en `revisor-seguridad`: Risk Score numérico (críticos×25+altos×10+medios×3+bajos×1, cap 100), tabla RED FLAGS anti-racionalización, tiers de escaneo por tamaño con % de cobertura, redacción de secretos en reportes, "cero hallazgos = listar qué se verificó", IDs SEC-NNN.
+- **Código mínimo** (de Ponytail) en `implementador` + framework-rules + CLAUDE-template: la escalera (YAGNI → codebase → stdlib → nativo → dependencia instalada → mínimo código), sin abstracciones no pedidas, fix de causa raíz, y marcador de deuda `// deuda: <qué>. techo: <límite>. upgrade: <cuándo>` (grep-eable). Guardarraíl: la escalera nunca aplica a seguridad/validación/errores/accesibilidad.
+- **Tres direcciones visuales** (de huashu-design): nueva sección en framework.md — 3 borradores reales (no texto) con enfoques distintos, generados en paralelo anti-convergencia; usuario elige; criterio de salida de Fase 5; excepción para adopciones Modo B.
+- **Anti-AI-slop** (de webkit/ui-ux-pro-max): prohibiciones de diseño (cyan/púrpura/Inter por defecto, todo centrado, copy con vocabulario IA) en framework.md + nota en design-tokens-template.
+- **Esfuerzo e higiene de contexto** (de guías tododeia verificadas contra docs de Anthropic): segunda perilla (esfuerzo) en "Cambio de modelo"; regla "¿modelo o esfuerzo?" (falló con contexto → modelo; se saltó pasos → esfuerzo); /compact al cerrar tarea, /clear en tema nuevo (framework-rules).
+- **Estilo de interacción** (de The Architect/webkit): máx 3 preguntas por mensaje, UNA recomendación con justificación en vez de menús, máx 2 rondas de re-presentación, autopiloto dentro de fase (aprobaciones solo en checkpoints).
+- **Descartado conscientemente**: patrón Fable/Codex (dependencia de OpenAI), gate-files con hooks (PROGRESS/artifact ya cumplen ese rol — R5), deploy claimable (nivel herramienta), dispatcher de carga progresiva (frágil con instrucciones pegadas).
+- **Pendiente post-piloto**: enriquecer arquetipos con tablas de stack default + matriz de combinaciones prohibidas (estilo stack-compatibility.md de The Architect).
+
 ### 2026-07-10 — Actualización v2.1: gaps de proceso
 - Template repo actualizado a v2.1 (`_context/framework.md`, `_templates/`, README) y commiteado por Code (c49ea31).
 - Análisis comparativo del piloto Bandera Travels vs. proceso estándar (override bien ejecutado; scope creep del prototipo sin regla; archivos del piloto en v2.0).

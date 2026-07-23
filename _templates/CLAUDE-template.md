@@ -93,6 +93,29 @@
 
 ---
 
+## Build Order — secuencia de construcción
+
+> Definido en Fase 4. **Criterio de calidad: una instancia de Code SIN contexto previo debe poder construir el producto siguiendo esta lista, en orden, sin hacer preguntas.** El orquestador recorta specs de aquí para cada `implementador`.
+
+| # | Paso | Entregable | Depende de |
+|---|------|-----------|------------|
+| 0 | Setup de entornos (ver sección Entornos) | Pipeline local→staging→production verificado con cambio trivial | — |
+| 1 | Config de estilos desde `docs/design/design-tokens.md` | Tailwind config / CSS vars con los tokens aprobados | 0 |
+| 2 | [Schema de DB + migración inicial] | [Tablas base migradas en local y staging] | 0 |
+| 3 | [Auth: registro / login / sesión / roles] | [Flujo de auth completo y protegido] | 2 |
+| 4 | [Layout base + navegación] | [Shell de la app según prototype/] | 1 |
+| 5 | [Feature core 1 — nombre] | [Funcional con tests] | 3, 4 |
+| 6 | [Feature core 2 — nombre] | [Funcional con tests] | [depende] |
+| … | [una fila por bloque constructivo, en orden de dependencias] | | |
+| N | Verificación de cierre de Fase 6 | `verificador-qa` + `revisor-seguridad` en verde | todos |
+
+### Reglas del Build Order
+- Los pasos que tocan **archivos compartidos** (schema, config global, layout) los ejecuta el hilo principal, serializados. Los pasos independientes entre sí se reparten a `implementador` en paralelo.
+- Cada paso cierra con su verificación (build pasa + tests del paso) antes de arrancar el siguiente que dependa de él.
+- No improvisar el orden ni agregar pasos no listados — un paso nuevo es un cambio al plan (documentar, y si expande scope: R8).
+
+---
+
 ## Variables de entorno
 
 > ⚠️ Nunca hardcodear valores. Local usa `.env.local` (git-ignored); staging y production usan las variables del hosting, configuradas por entorno. Cada entorno tiene sus propios valores — especialmente `DATABASE_URL` y las keys de servicios externos (test vs. live).
@@ -181,7 +204,9 @@ NEXTAUTH_URL=            # localhost / URL staging / URL production
 
 ### Siempre hacer:
 - Leer este archivo al inicio de cada sesión
+- Seguir el **Build Order** como secuencia de construcción — no improvisar el orden
 - Leer `docs/design/` antes de implementar cualquier UI — es la fuente de verdad visual (handoff de Fase 5); construir sobre el prototipo, no reinventar
+- **Código mínimo**: antes de escribir, recorrer la escalera (¿necesita existir? → ¿ya existe en el codebase? → ¿stdlib? → ¿feature nativa de la plataforma? → ¿dependencia ya instalada? → recién entonces, el mínimo código que funcione). Marcar simplificaciones deliberadas: `// deuda: <qué>. techo: <límite>. upgrade: <cuándo>`
 - Seguir las convenciones de naming definidas arriba
 - Escribir tests para funcionalidades críticas
 - Documentar funciones complejas con JSDoc/docstrings

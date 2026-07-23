@@ -2504,6 +2504,7 @@
                   <li class="criteria-item"><span class="criteria-check"></span> Arquitectura del sistema documentada</li>
                   <li class="criteria-item"><span class="criteria-check"></span> Estrategia de entornos definida: local / staging / production, con DBs separadas y secrets por entorno (sección "Entornos" del CLAUDE.md)</li>
                   <li class="criteria-item"><span class="criteria-check"></span> Perfil de seguridad definido: sensibilidad de datos, modelo de auth, superficie de ataque y requisitos del producto (sección "Seguridad" del CLAUDE.md)</li>
+                  <li class="criteria-item"><span class="criteria-check"></span> Build Order definido: secuencia numerada de construcción con entregables y dependencias (sección "Build Order" del CLAUDE.md) — criterio: una instancia de Code sin contexto construye sin preguntar</li>
                   <li class="criteria-item"><span class="criteria-check"></span> Estimaciones aceptadas por el equipo y/o cliente</li>
                   <li class="criteria-item"><span class="criteria-check"></span> Propuesta técnica agregada al artifact</li>
                 </ul>
@@ -2532,6 +2533,7 @@
                 <div class="phase-section-title">Actividades</div>
                 <ul class="activity-list">
                   <li class="activity-item"><span class="resp resp-user">Usuario</span>Dar requirements de diseño: preferencias, referencias, restricciones de marca (opcional).</li>
+                  <li class="activity-item"><span class="resp resp-both">Ambos</span>Tres direcciones visuales: Claude genera 3 borradores reales (renderizados, no descripciones) con enfoques deliberadamente distintos — en paralelo para evitar convergencia — y el usuario elige o mezcla. La elección sin visual es inválida. (No aplica a adopciones con identidad ya construida.)</li>
                   <li class="activity-item"><span class="resp resp-both">Ambos</span>Definir el nivel de interactividad: Claude propone según industria/producto (muy dinámico · moderado · sobrio) con justificación, el usuario confirma. Default del framework: dinámico e interactivo.</li>
                   <li class="activity-item"><span class="resp resp-claude">Claude</span>Definir flujos de usuario y arquitectura de información.</li>
                   <li class="activity-item"><span class="resp resp-claude">Claude</span>Crear wireframes de todas las pantallas y componentes.</li>
@@ -2555,6 +2557,7 @@
               <div class="phase-section full-width">
                 <div class="phase-section-title">Criterios de salida</div>
                 <ul class="criteria-list">
+                  <li class="criteria-item"><span class="criteria-check"></span> Dirección visual elegida por el usuario entre 3 propuestas reales</li>
                   <li class="criteria-item"><span class="criteria-check"></span> Nivel de interactividad propuesto por Claude y confirmado por el usuario</li>
                   <li class="criteria-item"><span class="criteria-check"></span> Todos los flujos de usuario definidos y aprobados</li>
                   <li class="criteria-item"><span class="criteria-check"></span> Wireframes de todas las pantallas completados</li>
@@ -3034,7 +3037,7 @@
       <div class="section-title">Modelos recomendados por fase</div>
 
       <p style="font-size:13px; color:var(--text-secondary); line-height:1.7; margin-bottom:24px;">
-        Claude no puede cambiar el modelo por sí mismo — lo selecciona el usuario en la app. Por eso el framework exige que <strong>en cada Status Check y en cada cierre de fase ("¿Qué sigue?") Claude indique el modelo recomendado del siguiente paso</strong>, y avise explícitamente si hay que cambiarlo en el selector. Disponibles de menor a mayor capacidad: Haiku 4.5 · Sonnet 5 · Opus 4.8 · Fable 5 — con libertad de subir para una tarea puntual compleja o bajar a Haiku para lo trivial, volviendo luego al recomendado.
+        Claude no puede cambiar el modelo por sí mismo — lo selecciona el usuario en la app. Por eso el framework exige que <strong>en cada Status Check y en cada cierre de fase ("¿Qué sigue?") Claude indique el modelo recomendado del siguiente paso</strong>, y avise explícitamente si hay que cambiarlo en el selector. Disponibles de menor a mayor capacidad: Haiku 4.5 · Sonnet 5 · Opus 4.8 · Fable 5 — con libertad de subir para una tarea puntual compleja o bajar a Haiku para lo trivial, volviendo luego al recomendado. La segunda perilla es el <strong>esfuerzo</strong>: alto como default del trabajo real, máximo casi nunca. Y la regla de decisión: <strong>falló teniendo todo el contexto → sube de modelo; falló porque se saltó pasos o no verificó → sube el esfuerzo</strong>.
       </p>
       <div class="model-table">
         <div class="model-row header">
@@ -3842,7 +3845,7 @@
         <div class="audit-step">
           <div class="audit-step-num">04</div>
           <div class="audit-step-title">Mapeo + Backfill</div>
-          <div class="audit-step-desc">Fases 1–6 quedan "Completo (retroactivo)" y el proyecto entra en Fase 7 u 8. Obligatorio: CLAUDE.md real, PROGRESS sincronizado, entornos separados, críticos de seguridad resueltos. El artifact retroactivo usa dos fuentes: el código (funcional/técnico) y el contexto del usuario (negocio); lo irreconstruible se marca como gap — nunca se inventa (R7).</div>
+          <div class="audit-step-desc">Fases 1–6 quedan "Completo (retroactivo)" y el proyecto entra en Fase 7 u 8. Obligatorio: CLAUDE.md real, PROGRESS sincronizado, entornos separados, críticos de seguridad resueltos. El artifact retroactivo usa dos fuentes: el código (funcional/técnico) y el contexto del usuario (negocio); lo irreconstruible se marca como gap — nunca se inventa (R7). Si hay identidad visual construida, ES el design system: se extrae del producto real como docs/design/ retroactivo y todo lo nuevo construye sobre ella — rediseñar requiere pedido explícito del usuario (scope change R8).</div>
         </div>
         <div class="audit-step">
           <div class="audit-step-num">05</div>

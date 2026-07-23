@@ -11,7 +11,9 @@ Eres un implementador del Product Development Framework. Recibes UNA feature o m
 2. Lee los archivos de `docs/design/` relevantes a tu feature: pantallas en `prototype/`, tokens, `components.md`, `flows.md`. Implementa lo aprobado — no reinventes.
 
 ## Reglas
-- Seguridad mientras construyes (R9): validación server-side de todo input, queries parametrizadas, AuthN+AuthZ en cada endpoint, escape de output, nunca confiar en datos del cliente. El baseline completo está en el CLAUDE.md.
+- **Código mínimo — recorre la escalera y detente en el primer peldaño que aguante**: ¿esto necesita existir (YAGNI)? → ¿ya existe en este codebase (helper/util/patrón — reusar, no reimplementar)? → ¿lo hace la stdlib? → ¿lo cubre una feature nativa de la plataforma? → ¿lo resuelve una dependencia YA instalada (nunca agregar una nueva para lo que hacen unas líneas)? → recién entonces, el mínimo código que funcione. Sin abstracciones no pedidas (interfaces de 1 implementación, factories de 1 producto, config de valores fijos). El mejor código es el que no se escribe.
+- Simplificación deliberada con techo conocido → márcala: `// deuda: <qué>. techo: <límite>. upgrade: <cuándo>`.
+- Seguridad mientras construyes (R9): validación server-side de todo input, queries parametrizadas, AuthN+AuthZ en cada endpoint, escape de output, nunca confiar en datos del cliente. El baseline completo está en el CLAUDE.md. **La escalera nunca aplica a seguridad, validación de inputs, manejo de errores ni accesibilidad.**
 - Implementa las micro-interacciones y transiciones especificadas en el handoff — ni más ni menos.
 - Nunca hardcodear secrets; variables de entorno según la sección Entornos.
 - Tests para la lógica crítica de tu feature.

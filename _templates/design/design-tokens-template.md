@@ -1,6 +1,7 @@
 # Design Tokens — [Nombre del Proyecto]
 > Exportado de Claude Design al cerrar Fase 5. Fuente de verdad para el config de estilos.
 > Code: traducir a Tailwind config / CSS variables ANTES de la primera pantalla.
+> ⚠️ Anti-AI-slop: nada de cyan-sobre-oscuro ni gradientes púrpura como identidad por defecto, ni Inter/Roboto sin justificación — cada token debe poder responder "¿de dónde de la marca/contenido salió?".
 
 ## Colores
 
